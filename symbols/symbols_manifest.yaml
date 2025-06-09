@@ -1,0 +1,59 @@
+# VectorForge Symbol Manifest
+# This file describes all available SVG symbols and their parameters
+
+symbols:
+  # GD&T symbols
+  - name: "flatness"
+    filename: "gdt_flatness.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.01, "max": 1.0}
+      
+  - name: "straightness"
+    filename: "gdt_straightness.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.01, "max": 1.0}
+      
+  - name: "circularity"
+    filename: "gdt_circularity.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.01, "max": 0.5}
+      
+  # Surface finish symbols
+  - name: "surface_finish_triangle"
+    filename: "surface_triangle.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      roughness_ra: {"type": "float", "min": 0.1, "max": 25.0}
+      machining_allowance: {"type": "float", "min": 0.0, "max": 5.0}
+      
+  # Thread callouts
+  - name: "thread_metric"
+    filename: "thread_metric.svg"
+    w_mm: 20.0
+    h_mm: 8.0
+    params:
+      thread_size: {"type": "enum", "values": ["M6", "M8", "M10", "M12", "M16", "M20"]}
+      pitch: {"type": "float", "min": 0.5, "max": 2.5}
+      
+  # Basic geometric symbols
+  - name: "diameter"
+    filename: "diameter_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params: {}
+      
+  - name: "radius"
+    filename: "radius_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params: {}
+
+# Schema version for compatibility
+schema_version: "1.0"

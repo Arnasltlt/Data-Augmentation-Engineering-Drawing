@@ -1,0 +1,812 @@
+{
+  "metadata": {
+    "sheet_size": "A3",
+    "symbol_count_requested": 45,
+    "symbol_count_placed": 45,
+    "generation_time_ms": 1.212,
+    "random_seed": 42,
+    "generated_at": "2025-06-09T11:49:39.691759"
+  },
+  "annotations": [
+    {
+      "id": 0,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 42.393381609230744,
+        "y": 305.6539979048938
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 40.393381609230744,
+        "y_min": 303.6539979048938,
+        "x_max": 44.393381609230744,
+        "y_max": 307.6539979048938
+      },
+      "parameters": {}
+    },
+    {
+      "id": 1,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 51.53570277326371,
+        "y": 52.58808976391697
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 47.53570277326371,
+        "y_min": 50.58808976391697,
+        "x_max": 55.53570277326371,
+        "y_max": 54.58808976391697
+      },
+      "parameters": {}
+    },
+    {
+      "id": 2,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 127.18465677407883,
+        "y": 23.799698897475857
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 125.18465677407883,
+        "y_min": 21.799698897475857,
+        "x_max": 129.18465677407883,
+        "y_max": 25.799698897475857
+      },
+      "parameters": {
+        "value": 15.5,
+        "tolerance": "+0.064/-0.061"
+      }
+    },
+    {
+      "id": 3,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 189.41845151380983,
+        "y": 227.7968263188738
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 187.41845151380983,
+        "y_min": 225.7968263188738,
+        "x_max": 191.41845151380983,
+        "y_max": 229.7968263188738
+      },
+      "parameters": {}
+    },
+    {
+      "id": 4,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 172.1554062271158,
+        "y": 332.8438913010972
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 166.1554062271158,
+        "y_min": 331.3438913010972,
+        "x_max": 178.1554062271158,
+        "y_max": 334.3438913010972
+      },
+      "parameters": {
+        "size": "M8",
+        "pitch": 2.0,
+        "class": "6g"
+      }
+    },
+    {
+      "id": 5,
+      "symbol_name": "surface_finish_triangle",
+      "position": {
+        "x": 54.101382948428146,
+        "y": 391.5135896660921
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 52.601382948428146,
+        "y_min": 390.0135896660921,
+        "x_max": 55.601382948428146,
+        "y_max": 393.0135896660921
+      },
+      "parameters": {
+        "roughness": 0.8,
+        "process": "machined"
+      }
+    },
+    {
+      "id": 6,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 41.62983986086796,
+        "y": 347.9552634399415
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 35.62983986086796,
+        "y_min": 346.4552634399415,
+        "x_max": 47.62983986086796,
+        "y_max": 349.4552634399415
+      },
+      "parameters": {
+        "size": "M6",
+        "pitch": 2.0,
+        "class": "4H6H"
+      }
+    },
+    {
+      "id": 7,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 275.7681405104507,
+        "y": 161.89961337450796
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 271.7681405104507,
+        "y_min": 159.89961337450796,
+        "x_max": 279.7681405104507,
+        "y_max": 163.89961337450796
+      },
+      "parameters": {
+        "tolerance": 0.416,
+        "datum": "C"
+      }
+    },
+    {
+      "id": 8,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 64.49478514006816,
+        "y": 39.5438389342014
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 62.49478514006816,
+        "y_min": 37.5438389342014,
+        "x_max": 66.49478514006816,
+        "y_max": 41.5438389342014
+      },
+      "parameters": {
+        "value": 39.8,
+        "tolerance": "+0.099/-0.087"
+      }
+    },
+    {
+      "id": 9,
+      "symbol_name": "weld_symbol",
+      "position": {
+        "x": 40.37138737003659,
+        "y": 122.5215996253763
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 37.37138737003659,
+        "y_min": 119.5215996253763,
+        "x_max": 43.37138737003659,
+        "y_max": 125.5215996253763
+      },
+      "parameters": {}
+    },
+    {
+      "id": 10,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 113.57868015444143,
+        "y": 94.96478418550913
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 109.57868015444143,
+        "y_min": 92.96478418550913,
+        "x_max": 117.57868015444143,
+        "y_max": 96.96478418550913
+      },
+      "parameters": {}
+    },
+    {
+      "id": 11,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 267.70670244551087,
+        "y": 268.62201255765103
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 265.70670244551087,
+        "y_min": 266.62201255765103,
+        "x_max": 269.70670244551087,
+        "y_max": 270.62201255765103
+      },
+      "parameters": {}
+    },
+    {
+      "id": 12,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 211.05161584044532,
+        "y": 76.70738752972365
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 209.05161584044532,
+        "y_min": 74.70738752972365,
+        "x_max": 213.05161584044532,
+        "y_max": 78.70738752972365
+      },
+      "parameters": {
+        "value": 17.1,
+        "tolerance": "+0.093/-0.072"
+      }
+    },
+    {
+      "id": 13,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 198.16123351627627,
+        "y": 345.7693603951646
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 194.16123351627627,
+        "y_min": 343.7693603951646,
+        "x_max": 202.16123351627627,
+        "y_max": 347.7693603951646
+      },
+      "parameters": {}
+    },
+    {
+      "id": 14,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 235.06489778783143,
+        "y": 330.7981371054009
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 231.06489778783143,
+        "y_min": 328.7981371054009,
+        "x_max": 239.06489778783143,
+        "y_max": 332.7981371054009
+      },
+      "parameters": {}
+    },
+    {
+      "id": 15,
+      "symbol_name": "surface_finish_triangle",
+      "position": {
+        "x": 29.635677827963942,
+        "y": 374.01504130166137
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 28.135677827963942,
+        "y_min": 372.51504130166137,
+        "x_max": 31.135677827963942,
+        "y_max": 375.51504130166137
+      },
+      "parameters": {
+        "roughness": 1.6,
+        "process": "forged"
+      }
+    },
+    {
+      "id": 16,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 120.84245378107603,
+        "y": 374.5753931269958
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 114.84245378107603,
+        "y_min": 373.0753931269958,
+        "x_max": 126.84245378107603,
+        "y_max": 376.0753931269958
+      },
+      "parameters": {
+        "size": "M8",
+        "pitch": 1.5,
+        "class": "6H"
+      }
+    },
+    {
+      "id": 17,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 214.40203618264218,
+        "y": 225.43500670824702
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 210.40203618264218,
+        "y_min": 223.43500670824702,
+        "x_max": 218.40203618264218,
+        "y_max": 227.43500670824702
+      },
+      "parameters": {}
+    },
+    {
+      "id": 18,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 55.114314904682224,
+        "y": 75.3528726820903
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 51.114314904682224,
+        "y_min": 73.3528726820903,
+        "x_max": 59.114314904682224,
+        "y_max": 77.3528726820903
+      },
+      "parameters": {
+        "tolerance": 0.302,
+        "datum": "-"
+      }
+    },
+    {
+      "id": 19,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 173.91043351569894,
+        "y": 197.31580545051688
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 167.91043351569894,
+        "y_min": 195.81580545051688,
+        "x_max": 179.91043351569894,
+        "y_max": 198.81580545051688
+      },
+      "parameters": {
+        "size": "1/4-20",
+        "pitch": 1.0,
+        "class": "4H6H"
+      }
+    },
+    {
+      "id": 20,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 43.27262583454645,
+        "y": 362.37622625112715
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 41.27262583454645,
+        "y_min": 360.37622625112715,
+        "x_max": 45.27262583454645,
+        "y_max": 364.37622625112715
+      },
+      "parameters": {}
+    },
+    {
+      "id": 21,
+      "symbol_name": "weld_symbol",
+      "position": {
+        "x": 186.70064741512797,
+        "y": 56.95155639677532
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 183.70064741512797,
+        "y_min": 53.95155639677532,
+        "x_max": 189.70064741512797,
+        "y_max": 59.95155639677532
+      },
+      "parameters": {}
+    },
+    {
+      "id": 22,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 136.05167700255652,
+        "y": 389.7111072983477
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 132.05167700255652,
+        "y_min": 387.7111072983477,
+        "x_max": 140.05167700255652,
+        "y_max": 391.7111072983477
+      },
+      "parameters": {}
+    },
+    {
+      "id": 23,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 220.01568034121365,
+        "y": 213.04194314331278
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 218.01568034121365,
+        "y_min": 211.04194314331278,
+        "x_max": 222.01568034121365,
+        "y_max": 215.04194314331278
+      },
+      "parameters": {
+        "value": 44.2,
+        "tolerance": "+0.037/-0.068"
+      }
+    },
+    {
+      "id": 24,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 66.30273078177211,
+        "y": 160.0698856260946
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 64.30273078177211,
+        "y_min": 158.0698856260946,
+        "x_max": 68.30273078177211,
+        "y_max": 162.0698856260946
+      },
+      "parameters": {
+        "value": 29.3,
+        "tolerance": "+0.080/-0.058"
+      }
+    },
+    {
+      "id": 25,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 175.1160932198016,
+        "y": 205.48786037946337
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 171.1160932198016,
+        "y_min": 203.48786037946337,
+        "x_max": 179.1160932198016,
+        "y_max": 207.48786037946337
+      },
+      "parameters": {
+        "tolerance": 0.465,
+        "datum": "C"
+      }
+    },
+    {
+      "id": 26,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 29.58186978693645,
+        "y": 359.6918012848001
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 25.58186978693645,
+        "y_min": 357.6918012848001,
+        "x_max": 33.58186978693645,
+        "y_max": 361.6918012848001
+      },
+      "parameters": {}
+    },
+    {
+      "id": 27,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 210.88314301320486,
+        "y": 335.1452083543551
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 206.88314301320486,
+        "y_min": 333.1452083543551,
+        "x_max": 214.88314301320486,
+        "y_max": 337.1452083543551
+      },
+      "parameters": {
+        "tolerance": 0.073,
+        "datum": "-"
+      }
+    },
+    {
+      "id": 28,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 57.07965979993685,
+        "y": 220.95881981762858
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 55.07965979993685,
+        "y_min": 218.95881981762858,
+        "x_max": 59.07965979993685,
+        "y_max": 222.95881981762858
+      },
+      "parameters": {
+        "value": 48.4,
+        "tolerance": "+0.094/-0.078"
+      }
+    },
+    {
+      "id": 29,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 66.91424030538698,
+        "y": 135.4396513551544
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 64.91424030538698,
+        "y_min": 133.4396513551544,
+        "x_max": 68.91424030538698,
+        "y_max": 137.4396513551544
+      },
+      "parameters": {}
+    },
+    {
+      "id": 30,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 254.39773243038056,
+        "y": 190.73999813227852
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 248.39773243038056,
+        "y_min": 189.23999813227852,
+        "x_max": 260.39773243038053,
+        "y_max": 192.23999813227852
+      },
+      "parameters": {
+        "size": "M8",
+        "pitch": 1.0,
+        "class": "6g"
+      }
+    },
+    {
+      "id": 31,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 172.25504526499577,
+        "y": 103.12543410824449
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 168.25504526499577,
+        "y_min": 101.12543410824449,
+        "x_max": 176.25504526499577,
+        "y_max": 105.12543410824449
+      },
+      "parameters": {
+        "tolerance": 0.014,
+        "datum": "A"
+      }
+    },
+    {
+      "id": 32,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 32.13068826167272,
+        "y": 24.43953138899518
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 28.130688261672717,
+        "y_min": 22.43953138899518,
+        "x_max": 36.13068826167272,
+        "y_max": 26.43953138899518
+      },
+      "parameters": {}
+    },
+    {
+      "id": 33,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 152.30799622851046,
+        "y": 122.2769965299606
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 148.30799622851046,
+        "y_min": 120.2769965299606,
+        "x_max": 156.30799622851046,
+        "y_max": 124.2769965299606
+      },
+      "parameters": {
+        "tolerance": 0.115,
+        "datum": "B"
+      }
+    },
+    {
+      "id": 34,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 267.3953876785232,
+        "y": 238.13306495681266
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 265.3953876785232,
+        "y_min": 236.13306495681266,
+        "x_max": 269.3953876785232,
+        "y_max": 240.13306495681266
+      },
+      "parameters": {}
+    },
+    {
+      "id": 35,
+      "symbol_name": "gdt_parallelism",
+      "position": {
+        "x": 225.06262513421265,
+        "y": 331.7688111155908
+      },
+      "rotation": 90,
+      "bounding_box": {
+        "x_min": 221.06262513421265,
+        "y_min": 329.7688111155908,
+        "x_max": 229.06262513421265,
+        "y_max": 333.7688111155908
+      },
+      "parameters": {}
+    },
+    {
+      "id": 36,
+      "symbol_name": "gdt_flatness",
+      "position": {
+        "x": 40.07438902755348,
+        "y": 182.6962682329255
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 36.07438902755348,
+        "y_min": 180.6962682329255,
+        "x_max": 44.07438902755348,
+        "y_max": 184.6962682329255
+      },
+      "parameters": {
+        "tolerance": 0.211,
+        "datum": "A"
+      }
+    },
+    {
+      "id": 37,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 190.3933482965611,
+        "y": 267.8871815128138
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 188.3933482965611,
+        "y_min": 265.8871815128138,
+        "x_max": 192.3933482965611,
+        "y_max": 269.8871815128138
+      },
+      "parameters": {}
+    },
+    {
+      "id": 38,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 208.9766009369134,
+        "y": 329.33522681209445
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 202.9766009369134,
+        "y_min": 327.83522681209445,
+        "x_max": 214.9766009369134,
+        "y_max": 330.83522681209445
+      },
+      "parameters": {
+        "size": "M8",
+        "pitch": 1.25,
+        "class": "6H"
+      }
+    },
+    {
+      "id": 39,
+      "symbol_name": "diameter_symbol",
+      "position": {
+        "x": 134.471498558445,
+        "y": 179.06512937442406
+      },
+      "rotation": 180,
+      "bounding_box": {
+        "x_min": 132.471498558445,
+        "y_min": 177.06512937442406,
+        "x_max": 136.471498558445,
+        "y_max": 181.06512937442406
+      },
+      "parameters": {
+        "value": 25.8,
+        "tolerance": "+0.089/-0.017"
+      }
+    },
+    {
+      "id": 40,
+      "symbol_name": "weld_symbol",
+      "position": {
+        "x": 246.4256073904561,
+        "y": 229.82817310524013
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 243.4256073904561,
+        "y_min": 226.82817310524013,
+        "x_max": 249.4256073904561,
+        "y_max": 232.82817310524013
+      },
+      "parameters": {}
+    },
+    {
+      "id": 41,
+      "symbol_name": "radius_symbol",
+      "position": {
+        "x": 284.80411387667436,
+        "y": 343.066923691661
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 282.80411387667436,
+        "y_min": 341.066923691661,
+        "x_max": 286.80411387667436,
+        "y_max": 345.066923691661
+      },
+      "parameters": {}
+    },
+    {
+      "id": 42,
+      "symbol_name": "weld_symbol",
+      "position": {
+        "x": 242.99654402627678,
+        "y": 78.52657757794212
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 239.99654402627678,
+        "y_min": 75.52657757794212,
+        "x_max": 245.99654402627678,
+        "y_max": 81.52657757794212
+      },
+      "parameters": {}
+    },
+    {
+      "id": 43,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 72.64303428778314,
+        "y": 170.71299614213268
+      },
+      "rotation": 0,
+      "bounding_box": {
+        "x_min": 66.64303428778314,
+        "y_min": 169.21299614213268,
+        "x_max": 78.64303428778314,
+        "y_max": 172.21299614213268
+      },
+      "parameters": {
+        "size": "M8",
+        "pitch": 2.0,
+        "class": "6H"
+      }
+    },
+    {
+      "id": 44,
+      "symbol_name": "thread_callout_m6",
+      "position": {
+        "x": 86.27881041562027,
+        "y": 322.776028973582
+      },
+      "rotation": 270,
+      "bounding_box": {
+        "x_min": 80.27881041562027,
+        "y_min": 321.276028973582,
+        "x_max": 92.27881041562027,
+        "y_max": 324.276028973582
+      },
+      "parameters": {
+        "size": "M10",
+        "pitch": 2.0,
+        "class": "4H6H"
+      }
+    }
+  ]
+}

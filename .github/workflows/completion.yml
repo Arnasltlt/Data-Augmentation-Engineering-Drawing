@@ -1,0 +1,65 @@
+name: 🛡️ Completion Score Monitor
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  completion-score:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Make completion score script executable
+      run: chmod +x tools/completion_score.py
+    
+    - name: Calculate completion score
+      id: score
+      run: |
+        python tools/completion_score.py --format json > completion_result.json
+        SCORE=$(python -c "import json; print(json.load(open('completion_result.json'))['total_score'])")
+        PASSING=$(python -c "import json; print(json.load(open('completion_result.json'))['passing'])")
+        echo "score=$SCORE" >> $GITHUB_OUTPUT
+        echo "passing=$PASSING" >> $GITHUB_OUTPUT
+        
+        # Display human-readable results
+        echo "📊 Completion Score Results:"
+        python tools/completion_score.py
+    
+    - name: Check passing threshold
+      if: steps.score.outputs.passing == 'False'
+      run: |
+        echo "❌ Completion score below threshold (< 90) or has zero metrics"
+        echo "Score: ${{ steps.score.outputs.score }}/100"
+        exit 1
+    
+    - name: Label as release candidate
+      if: github.event_name == 'pull_request' && steps.score.outputs.passing == 'True'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            labels: ['release-candidate']
+          });
+    
+    - name: Upload completion report
+      uses: actions/upload-artifact@v3
+      with:
+        name: completion-report
+        path: completion_result.json
