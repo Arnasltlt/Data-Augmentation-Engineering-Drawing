@@ -1,0 +1,42 @@
+{
+    "geometry": {
+        "lines": [
+            {"start": [0, 0], "end": [100, 0]},
+            {"start": [100, 0], "end": [100, 50]},
+            {"start": [100, 50], "end": [0, 50]},
+            {"start": [0, 50], "end": [0, 0]}
+        ],
+        "circles": [
+            {"center": [50, 25], "radius": 10}
+        ]
+    },
+    "annotations": {
+        "dimensions": [
+            {
+                "type": "linear",
+                "p1": [0, 50],
+                "p2": [100, 50],
+                "base": [50, 60]
+            },
+            {
+                "type": "diameter",
+                "center": [50, 25],
+                "radius": 10,
+                "location": [20, 40]
+            }
+        ],
+        "symbols": [
+            {
+                "name": "surface_finish_triangle",
+                "location": [5, 51],
+                "rotation": 0
+            }
+        ]
+    },
+    "title_block": {
+        "drawing_title": "Simple Plate",
+        "drawn_by": "AI Assistant",
+        "drawing_number": "SP-001",
+        "date": "2024-06-09"
+    }
+} 

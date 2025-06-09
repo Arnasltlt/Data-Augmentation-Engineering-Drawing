@@ -42,6 +42,13 @@ def main():
     )
 
     parser.add_argument(
+        "--base-drawing",
+        type=str,
+        default=None,
+        help="Path to a base DXF drawing to use from the raw_data directory (e.g., 0030_f.DXF)",
+    )
+
+    parser.add_argument(
         "--noise-level",
         type=int,
         choices=[0, 1, 2, 3],
@@ -119,7 +126,7 @@ def generate_pages_sequential(args, output_dir: Path):
 
     # Initialize agents
     layoutlab = LayoutLabAgent(sheet_size=args.sheet_size)
-    grungeworks = GrungeWorksAgent() if args.noise_level > 0 else None
+    grungeworks = GrungeWorksAgent()
 
     # Load symbols if available
     layoutlab.load_symbols()
@@ -129,14 +136,19 @@ def generate_pages_sequential(args, output_dir: Path):
         print(f"Generating page {i+1}/{args.num_pages}: {page_id}")
 
         # Step 1: LayoutLab generates clean drawing
-        drawing_data = layoutlab.generate_drawing(page_id, output_dir)
+        pdf_path = output_dir / f"{page_id}.pdf"
+        json_path = output_dir / f"{page_id}.json"
+        layoutlab.generate_drawing(page_id, output_dir)
+        
+        # Step 2: GrungeWorks converts PDF to PNG
+        png_path = output_dir / f"{page_id}.png"
+        grungeworks.convert_pdf_to_png(str(pdf_path), str(png_path))
 
-        # Step 2: GrungeWorks applies noise effects (if requested)
-        if grungeworks and args.noise_level > 0:
+        # Step 3: GrungeWorks applies noise effects (if requested)
+        if args.noise_level > 0:
             print(f"  Applying noise level {args.noise_level}")
-            grungeworks.apply_effects(
-                pdf_path=output_dir / f"{page_id}.pdf",
-                output_dir=output_dir,
+            grungeworks.apply_noise_to_image(
+                image_path=str(png_path),
                 noise_level=args.noise_level,
             )
 
@@ -170,22 +182,26 @@ def generate_pages_parallel(args, output_dir: Path):
 
             output_dir = Path(output_dir_str)
             page_id = f"page_{page_num:04d}"
+            pdf_path = output_dir / f"{page_id}.pdf"
+            png_path = output_dir / f"{page_id}.png"
 
             # Initialize agents
             layoutlab = LayoutLabAgent(sheet_size=sheet_size)
-            grungeworks = GrungeWorksAgent() if noise_level > 0 else None
+            grungeworks = GrungeWorksAgent()
 
             # Load symbols
             layoutlab.load_symbols()
 
             # Generate drawing
-            drawing_data = layoutlab.generate_drawing(page_id, output_dir)
+            layoutlab.generate_drawing(page_id, output_dir)
+
+            # Convert PDF to PNG
+            grungeworks.convert_pdf_to_png(str(pdf_path), str(png_path))
 
             # Apply noise effects if requested
-            if grungeworks and noise_level > 0:
-                grungeworks.apply_effects(
-                    pdf_path=output_dir / f"{page_id}.pdf",
-                    output_dir=output_dir,
+            if noise_level > 0:
+                grungeworks.apply_noise_to_image(
+                    image_path=str(png_path),
                     noise_level=noise_level,
                 )
 

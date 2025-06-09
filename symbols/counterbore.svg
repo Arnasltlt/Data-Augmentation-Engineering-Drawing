@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6mm" height="6mm" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg">
+  <!-- Counterbore Symbol -->
+  <circle cx="3" cy="3" r="2" fill="none" stroke="black" stroke-width="0.2"/>
+  <circle cx="3" cy="3" r="1" fill="none" stroke="black" stroke-width="0.2"/>
+  <line x1="3" y1="1" x2="3" y2="5" stroke="black" stroke-width="0.15"/>
+</svg>

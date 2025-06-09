@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="8mm" height="8mm" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-  <!-- GD&T Circularity Symbol - Emergency placeholder by RepoGuardian -->
-  <rect x="0.5" y="3" width="7" height="2" fill="none" stroke="black" stroke-width="0.2"/>
-  <circle cx="4" cy="4" r="1" fill="none" stroke="black" stroke-width="0.2"/>
+  <!-- GD&T Circularity Symbol -->
+  <path d="M 4 2 A 2 2 0 1 0 4 6 A 2 2 0 1 0 4 2 Z" fill="none" stroke="black" stroke-width="0.4"/>
 </svg>

@@ -1,0 +1,73 @@
+{
+  "title_block": {
+    "drawing_title": "Phase 4 Feature Test",
+    "drawn_by": "AI Planner",
+    "date": "2025-01-07",
+    "drawing_number": "P4-001",
+    "scale": "1:1"
+  },
+  "base_feature": {
+    "shape": "rectangle",
+    "width": 120,
+    "height": 80
+  },
+  "modifying_features": [
+    {
+      "type": "fillet",
+      "radius": 8,
+      "corners": ["top-left", "top-right"]
+    },
+    {
+      "type": "chamfer", 
+      "distance": 5,
+      "corners": ["bottom-left", "bottom-right"]
+    },
+    {
+      "type": "slot",
+      "center": [30, 0],
+      "width": 8,
+      "length": 30
+    },
+    {
+      "type": "counterbore",
+      "center": [-30, 25],
+      "hole_diameter": 6,
+      "counterbore_diameter": 12,
+      "counterbore_depth": 3
+    },
+    {
+      "type": "countersink",
+      "center": [-30, -25],
+      "hole_diameter": 5,
+      "countersink_diameter": 10,
+      "countersink_angle": 90
+    },
+    {
+      "type": "tapped_hole",
+      "center": [30, 25],
+      "thread_spec": "M8x1.25",
+      "pilot_diameter": 6.8
+    },
+    {
+      "type": "hole",
+      "center": [0, 0],
+      "diameter": 25
+    }
+  ],
+  "annotations": {
+    "dimensions": [
+      {
+        "type": "linear",
+        "feature_edge_1": "left",
+        "feature_edge_2": "right",
+        "offset": 15
+      },
+      {
+        "type": "linear", 
+        "feature_edge_1": "bottom",
+        "feature_edge_2": "top",
+        "offset": 15
+      }
+    ]
+  }
+}

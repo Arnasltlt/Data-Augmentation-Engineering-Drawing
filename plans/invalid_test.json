@@ -1,0 +1,32 @@
+{
+    "geometry": {
+        "circles": [
+            {"center": [50, 25], "radius": -5}
+        ],
+        "rectangles": [
+            {"corner1": [10, 10], "corner2": [10, 10]}
+        ]
+    },
+    "annotations": {
+        "dimensions": [
+            {
+                "type": "diameter",
+                "center": [50, 25],
+                "radius": -2,
+                "location": [20, 40]
+            }
+        ],
+        "symbols": [
+            {
+                "name": "non_existent_symbol",
+                "location": [5, 51],
+                "rotation": 400,
+                "scale": 50.0
+            }
+        ]
+    },
+    "title_block": {
+        "date": "invalid-date",
+        "scale": "bad:scale:format"
+    }
+}

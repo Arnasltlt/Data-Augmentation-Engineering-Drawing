@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="8" viewBox="0 0 16 8">
+  <!-- Basic weld symbol reference line -->
+  <line x1="2" y1="4" x2="14" y2="4" stroke="black" stroke-width="0.3"/>
+  <!-- Flag line -->
+  <line x1="2" y1="4" x2="2" y2="1" stroke="black" stroke-width="0.3"/>
+  <!-- Arrow -->
+  <path d="M 14 4 L 12 3 L 12 5 Z" stroke="black" stroke-width="0.2" fill="black"/>
+</svg>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="6mm" viewBox="0 0 8 6" xmlns="http://www.w3.org/2000/svg">
+  <!-- Depth Symbol -->
+  <path d="M 1,1 L 7,1 L 7,5 M 4,1 L 4,5" stroke="black" stroke-width="0.3"/>
+  <text x="4" y="4" text-anchor="middle" font-family="Arial, sans-serif" font-size="1.5" fill="black">⌄</text>
+</svg>

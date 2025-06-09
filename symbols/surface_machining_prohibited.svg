@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6mm" height="6mm" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg">
+  <!-- Surface Machining Prohibited Symbol -->
+  <path d="M 1 5 L 3 1 L 5 5" fill="none" stroke="black" stroke-width="0.2"/>
+  <line x1="0.5" y1="5" x2="5.5" y2="5" stroke="black" stroke-width="0.2"/>
+  <circle cx="3" cy="3.5" r="0.8" fill="none" stroke="black" stroke-width="0.15"/>
+  <line x1="2.3" y1="2.8" x2="3.7" y2="4.2" stroke="black" stroke-width="0.15"/>
+</svg>

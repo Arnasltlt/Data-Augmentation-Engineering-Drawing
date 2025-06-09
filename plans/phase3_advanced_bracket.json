@@ -1,0 +1,71 @@
+{
+  "base_feature": {
+    "type": "plate",
+    "shape": "rectangle",
+    "width": 150,
+    "height": 100
+  },
+  "modifying_features": [
+    {
+      "type": "hole",
+      "center": [
+        0,
+        0
+      ],
+      "diameter": 30
+    },
+    {
+      "type": "hole",
+      "center": [
+        -60,
+        35
+      ],
+      "diameter": 8
+    },
+    {
+      "type": "hole",
+      "center": [
+        60,
+        35
+      ],
+      "diameter": 8
+    },
+    {
+      "type": "hole",
+      "center": [
+        -60,
+        -35
+      ],
+      "diameter": 8
+    },
+    {
+      "type": "hole",
+      "center": [
+        60,
+        -35
+      ],
+      "diameter": 8
+    },
+    {
+      "type": "fillet",
+      "radius": 8,
+      "corners": [
+        "all"
+      ]
+    },
+    {
+      "type": "slot",
+      "center": [
+        0,
+        -25
+      ],
+      "width": 10,
+      "length": 40
+    }
+  ],
+  "title_block": {
+    "drawing_title": "Advanced Mounting Bracket",
+    "drawn_by": "Phase 3 Semantic Engine",
+    "date": "2024-06-09"
+  }
+}

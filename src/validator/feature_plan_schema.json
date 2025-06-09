@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Feature-Based Drawing Plan",
+  "description": "Schema for a feature-based engineering drawing plan (Phase 3).",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "base_feature": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string", "const": "plate"},
+        "shape": {"type": "string", "enum": ["rectangle", "circle"]},
+        "width": {"type": "number"},
+        "height": {"type": "number"},
+        "diameter": {"type": "number"}
+      },
+      "required": ["shape"]
+    },
+    "modifying_features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "enum": ["hole", "fillet", "chamfer", "slot", "counterbore", "countersink", "tapped_hole"]},
+          "center": {"type": "array", "items": {"type": "number"}},
+          "diameter": {"type": "number"},
+          "hole_diameter": {"type": "number"},
+          "counterbore_diameter": {"type": "number"},
+          "counterbore_depth": {"type": "number"},
+          "countersink_diameter": {"type": "number"},
+          "countersink_angle": {"type": "number"},
+          "pilot_diameter": {"type": "number"},
+          "thread_spec": {"type": "string"},
+          "radius": {"type": "number"},
+          "distance": {"type": "number"},
+          "corners": {"type": "array", "items": {"type": "string"}},
+          "width": {"type": "number"},
+          "length": {"type": "number"},
+          "depth": {"type": "number"}
+        },
+        "required": ["type"]
+      }
+    },
+    "annotations": {
+      "type": "object"
+    },
+    "title_block": {
+      "type": "object"
+    }
+  },
+  "required": ["base_feature"]
+} 

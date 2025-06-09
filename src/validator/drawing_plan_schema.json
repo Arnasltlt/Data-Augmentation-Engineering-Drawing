@@ -1,0 +1,344 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Drawing Plan Schema",
+  "description": "Schema for validating JSON drawing plans used by the generator",
+  "type": "object",
+  "required": ["geometry"],
+  "properties": {
+    "geometry": {
+      "type": "object",
+      "description": "Geometric elements of the drawing",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "description": "Array of line segments",
+          "items": {
+            "type": "object",
+            "required": ["start", "end"],
+            "properties": {
+              "start": {
+                "type": "array",
+                "description": "Start point [x, y]",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "end": {
+                "type": "array", 
+                "description": "End point [x, y]",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "layer": {"type": "string"},
+              "color": {"type": "string"}
+            }
+          }
+        },
+        "circles": {
+          "type": "array",
+          "description": "Array of circles",
+          "items": {
+            "type": "object",
+            "required": ["center", "radius"],
+            "properties": {
+              "center": {
+                "type": "array",
+                "description": "Center point [x, y]",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radius": {
+                "type": "number",
+                "minimum": 0.001,
+                "maximum": 10000
+              },
+              "layer": {"type": "string"},
+              "color": {"type": "string"}
+            }
+          }
+        },
+        "arcs": {
+          "type": "array",
+          "description": "Array of arcs",
+          "items": {
+            "type": "object",
+            "required": ["center", "radius", "start_angle", "end_angle"],
+            "properties": {
+              "center": {
+                "type": "array",
+                "description": "Center point [x, y]",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radius": {
+                "type": "number",
+                "minimum": 0.001,
+                "maximum": 10000
+              },
+              "start_angle": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 360
+              },
+              "end_angle": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 360
+              },
+              "layer": {"type": "string"},
+              "color": {"type": "string"}
+            }
+          }
+        },
+        "rectangles": {
+          "type": "array",
+          "description": "Array of rectangles",
+          "items": {
+            "type": "object",
+            "required": ["corner1", "corner2"],
+            "properties": {
+              "corner1": {
+                "type": "array",
+                "description": "First corner [x, y]",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "corner2": {
+                "type": "array",
+                "description": "Opposite corner [x, y]", 
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "layer": {"type": "string"},
+              "color": {"type": "string"}
+            }
+          }
+        },
+        "polygons": {
+          "type": "array",
+          "description": "Array of polygons",
+          "items": {
+            "type": "object",
+            "required": ["points"],
+            "properties": {
+              "points": {
+                "type": "array",
+                "description": "Array of polygon vertices",
+                "items": {
+                  "type": "array",
+                  "items": {"type": "number"},
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "minItems": 3
+              },
+              "closed": {"type": "boolean", "default": true},
+              "layer": {"type": "string"},
+              "color": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "annotations": {
+      "type": "object",
+      "description": "Annotations and dimensions",
+      "properties": {
+        "dimensions": {
+          "type": "array",
+          "description": "Array of dimensions",
+          "items": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["linear", "diameter", "radius", "angular", "arc_length"]
+              },
+              "p1": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "p2": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "base": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "center": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radius": {
+                "type": "number",
+                "minimum": 0.001
+              },
+              "location": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "text": {"type": "string"},
+              "precision": {"type": "integer", "minimum": 0, "maximum": 6}
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"type": {"const": "linear"}}},
+                "then": {"required": ["p1", "p2", "base"]}
+              },
+              {
+                "if": {"properties": {"type": {"const": "diameter"}}},
+                "then": {"required": ["center", "radius", "location"]}
+              },
+              {
+                "if": {"properties": {"type": {"const": "radius"}}},
+                "then": {"required": ["center", "radius", "location"]}
+              }
+            ]
+          }
+        },
+        "symbols": {
+          "type": "array",
+          "description": "Array of engineering symbols",
+          "items": {
+            "type": "object",
+            "required": ["name", "location"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Symbol name from manifest"
+              },
+              "location": {
+                "type": "array",
+                "description": "Symbol placement [x, y]",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "rotation": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 360,
+                "default": 0
+              },
+              "scale": {
+                "type": "number",
+                "minimum": 0.1,
+                "maximum": 10.0,
+                "default": 1.0
+              },
+              "parameters": {
+                "type": "object",
+                "description": "Symbol-specific parameters"
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "array",
+          "description": "Text notes and callouts",
+          "items": {
+            "type": "object",
+            "required": ["text", "location"],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "location": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "height": {
+                "type": "number",
+                "minimum": 1.0,
+                "maximum": 20.0,
+                "default": 3.5
+              },
+              "rotation": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 360,
+                "default": 0
+              },
+              "style": {
+                "type": "string",
+                "enum": ["normal", "bold", "italic"],
+                "default": "normal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "title_block": {
+      "type": "object",
+      "description": "Drawing title block information",
+      "properties": {
+        "drawing_title": {"type": "string", "maxLength": 100},
+        "drawing_number": {"type": "string", "maxLength": 50},
+        "scale": {"type": "string", "pattern": "^\\d+:\\d+$|^\\d+(\\.\\d+)?$"},
+        "date": {"type": "string", "format": "date"},
+        "drawn_by": {"type": "string", "maxLength": 50},
+        "checked_by": {"type": "string", "maxLength": 50},
+        "approved_by": {"type": "string", "maxLength": 50},
+        "material": {"type": "string", "maxLength": 100},
+        "finish": {"type": "string", "maxLength": 100},
+        "revision": {"type": "string", "maxLength": 10},
+        "sheet": {"type": "string", "maxLength": 20},
+        "size": {
+          "type": "string",
+          "enum": ["A0", "A1", "A2", "A3", "A4", "B", "C", "D", "E"]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Drawing metadata and settings",
+      "properties": {
+        "units": {
+          "type": "string",
+          "enum": ["mm", "in", "ft", "m"],
+          "default": "mm"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6,
+          "default": 2
+        },
+        "drawing_bounds": {
+          "type": "object",
+          "properties": {
+            "min_x": {"type": "number"},
+            "max_x": {"type": "number"},
+            "min_y": {"type": "number"},
+            "max_y": {"type": "number"}
+          }
+        },
+        "created_date": {"type": "string", "format": "date-time"},
+        "modified_date": {"type": "string", "format": "date-time"},
+        "version": {"type": "string", "default": "1.0"}
+      }
+    }
+  }
+}

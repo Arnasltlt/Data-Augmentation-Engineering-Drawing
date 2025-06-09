@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20mm" height="8mm" viewBox="0 0 20 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- Metric Thread Symbol -->
+  <text x="2" y="5" font-family="Arial" font-size="3" fill="black">M</text>
+  <line x1="6" y1="6" x2="18" y2="6" stroke="black" stroke-width="0.15"/>
+  <line x1="6" y1="2" x2="18" y2="2" stroke="black" stroke-width="0.15"/>
+  <path d="M 7 2 L 8 4 L 9 2 L 10 4 L 11 2 L 12 4 L 13 2 L 14 4 L 15 2 L 16 4 L 17 2" 
+        fill="none" stroke="black" stroke-width="0.1"/>
+</svg>

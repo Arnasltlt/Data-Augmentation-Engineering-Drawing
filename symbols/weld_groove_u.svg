@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="8mm" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- U-Groove Weld Symbol -->
+  <path d="M 2,2 L 2,6 Q 4,7 6,6 L 6,2" fill="none" stroke="black" stroke-width="0.4"/>
+  <text x="4" y="7.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="1" fill="black">U</text>
+</svg>

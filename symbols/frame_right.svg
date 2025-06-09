@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="3mm" height="8mm" viewBox="0 0 3 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- Feature Control Frame Right Boundary -->
+  <path d="M 2.5 1 L 0.5 1 L 0.5 7 L 2.5 7" fill="none" stroke="black" stroke-width="0.2" />
+</svg>

@@ -1,0 +1,60 @@
+{
+  "title_block": {
+    "drawing_title": "Phase 5 Annotation Test Plate",
+    "drawn_by": "AI Planner Phase 5",
+    "date": "2025-01-07",
+    "drawing_number": "P5-001",
+    "scale": "1:1",
+    "material": "AL 6061-T6",
+    "finish": "ANODIZED TYPE II",
+    "tolerance": "0.05",
+    "weight": "0.25",
+    "revision": "B"
+  },
+  "base_feature": {
+    "shape": "rectangle",
+    "width": 100,
+    "height": 60
+  },
+  "modifying_features": [
+    {
+      "type": "hole",
+      "center": [0, 0],
+      "diameter": 20
+    },
+    {
+      "type": "slot",
+      "center": [30, 15],
+      "width": 8,
+      "length": 25
+    },
+    {
+      "type": "counterbore", 
+      "center": [-30, 15],
+      "hole_diameter": 6,
+      "counterbore_diameter": 12,
+      "counterbore_depth": 3
+    },
+    {
+      "type": "countersink",
+      "center": [-30, -15],
+      "hole_diameter": 5,
+      "countersink_diameter": 10,
+      "countersink_angle": 82
+    },
+    {
+      "type": "tapped_hole",
+      "center": [30, -15],
+      "thread_spec": "M6x1.0",
+      "pilot_diameter": 5.0
+    },
+    {
+      "type": "fillet",
+      "radius": 5,
+      "corners": ["all"]
+    }
+  ],
+  "annotations": {
+    "dimensions": []
+  }
+}

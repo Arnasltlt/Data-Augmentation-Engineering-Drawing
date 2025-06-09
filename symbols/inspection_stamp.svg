@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12mm" height="8mm" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- Inspection Stamp -->
+  <rect x="0.5" y="0.5" width="11" height="7" fill="none" stroke="black" stroke-width="0.3"/>
+  <text x="6" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="1.5" fill="black">INSP</text>
+  <text x="6" y="6" text-anchor="middle" font-family="Arial, sans-serif" font-size="1.5" fill="black">OK</text>
+</svg>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="2mm" height="8mm" viewBox="0 0 2 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- Feature Control Frame Vertical Separator -->
+  <path d="M 1 1 L 1 7" fill="none" stroke="black" stroke-width="0.2"/>
+</svg>

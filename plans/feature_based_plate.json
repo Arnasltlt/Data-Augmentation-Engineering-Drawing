@@ -1,0 +1,42 @@
+{
+  "description": "A feature-based plan for a simple rectangular plate with a hole and rounded corners. This represents the target schema for Phase 3.",
+  "base_feature": {
+    "type": "plate",
+    "shape": "rectangle",
+    "width": 150,
+    "height": 100
+  },
+  "modifying_features": [
+    {
+      "type": "hole",
+      "center": [75, 50],
+      "diameter": 25
+    },
+    {
+      "type": "fillet",
+      "radius": 10,
+      "corners": ["all"]
+    }
+  ],
+  "annotations": {
+    "dimensions": [
+      {
+        "type": "linear",
+        "feature_edge_1": "bottom",
+        "feature_edge_2": "top",
+        "offset": 10
+      },
+      {
+        "type": "linear",
+        "feature_edge_1": "left",
+        "feature_edge_2": "right",
+        "offset": 10
+      }
+    ]
+  },
+  "title_block": {
+    "drawing_title": "Feature-Based Plate",
+    "drawn_by": "Phase 3 Engine",
+    "date": "2024-06-09"
+  }
+} 

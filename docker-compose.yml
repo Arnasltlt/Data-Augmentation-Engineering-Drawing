@@ -1,27 +1,48 @@
+# Docker Compose for Intelligent Drawing Generator
+# Phase 6: Complete deployment environment
+
 version: '3.8'
 
 services:
   drawing-generator:
     build: .
-    image: drawing-generator:latest
-    container_name: drawing-generator
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ENV=production
     volumes:
       - ./out:/app/out
-      - ./symbols:/app/symbols:ro
-    environment:
-      - PYTHONUNBUFFERED=1
-    command: ["-n", "3", "--sheet-size", "A4", "--noise-level", "1"]
+      - ./dataset_output:/app/dataset_output
+      - ./regression_results:/app/regression_results
+    restart: unless-stopped
     
-  # Development service with source mounted
-  drawing-generator-dev:
-    build: .
-    image: drawing-generator:latest
-    container_name: drawing-generator-dev
+  # Optional: Redis for caching (if needed for high-volume API usage)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    
+  # Optional: Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
     volumes:
-      - ./out:/app/out
-      - ./symbols:/app/symbols:ro
-      - ./src:/app/src
-      - ./generate.py:/app/generate.py
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+    
+  # Optional: Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
     environment:
-      - PYTHONUNBUFFERED=1
-    profiles: ["dev"]
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:

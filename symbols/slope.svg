@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="6mm" viewBox="0 0 8 6" xmlns="http://www.w3.org/2000/svg">
+  <!-- Slope Symbol -->
+  <path d="M 1 5 L 7 1" stroke="black" stroke-width="0.2"/>
+  <line x1="1" y1="5" x2="7" y2="5" stroke="black" stroke-width="0.15"/>
+  <text x="4" y="4" text-anchor="middle" font-family="Arial" font-size="1.5" fill="black">1:10</text>
+</svg>

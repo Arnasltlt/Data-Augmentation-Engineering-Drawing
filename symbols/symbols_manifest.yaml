@@ -1,59 +1,649 @@
-# VectorForge Symbol Manifest
-# This file describes all available SVG symbols and their parameters
+# VectorForge Symbol Manifest - CORRECTED
+# Complete library of 78 engineering drawing symbols
+# Schema version: 1.0 - FIXED PARITY
+
+schema_version: "1.0"
 
 symbols:
-  # GD&T symbols
-  - name: "flatness"
+  # =============================================================================
+  # GD&T SYMBOLS (ASME Y14.5 / ISO 1101)
+  # =============================================================================
+  
+  # Form Tolerances
+  - name: "gdt_flatness"
     filename: "gdt_flatness.svg"
     w_mm: 8.0
     h_mm: 8.0
     params:
-      tolerance_value: {"type": "float", "min": 0.01, "max": 1.0}
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum: {"type": "string", "values": ["", "A", "B", "C"]}
       
-  - name: "straightness"
+  - name: "gdt_straightness"
     filename: "gdt_straightness.svg"
     w_mm: 8.0
     h_mm: 8.0
     params:
-      tolerance_value: {"type": "float", "min": 0.01, "max": 1.0}
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      per_unit_length: {"type": "float", "min": 0.0, "max": 100.0}
       
-  - name: "circularity"
+  - name: "gdt_circularity"
     filename: "gdt_circularity.svg"
     w_mm: 8.0
     h_mm: 8.0
     params:
-      tolerance_value: {"type": "float", "min": 0.01, "max": 0.5}
+      tolerance_value: {"type": "float", "min": 0.001, "max": 0.5}
       
-  # Surface finish symbols
-  - name: "surface_finish_triangle"
+  - name: "gdt_cylindricity"
+    filename: "gdt_cylindricity.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 0.5}
+
+  # Orientation Tolerances  
+  - name: "gdt_angularity"
+    filename: "gdt_angularity.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+      
+  - name: "gdt_parallelism"
+    filename: "gdt_parallelism.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+      
+  - name: "gdt_perpendicularity"
+    filename: "gdt_perpendicularity.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+
+  # Location Tolerances
+  - name: "gdt_position"
+    filename: "gdt_position.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 2.0}
+      material_condition: {"type": "string", "values": ["MMC", "LMC", "RFS"]}
+      datum_references: {"type": "array", "items": "string"}
+      
+  - name: "gdt_concentricity"
+    filename: "gdt_concentricity.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 0.5}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+      
+  - name: "gdt_symmetry"
+    filename: "gdt_symmetry.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+
+  # Profile Tolerances
+  - name: "gdt_profile_line"
+    filename: "gdt_profile_line.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum_references: {"type": "array", "items": "string"}
+      
+  - name: "gdt_profile_surface"
+    filename: "gdt_profile_surface.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 1.0}
+      datum_references: {"type": "array", "items": "string"}
+
+  # Runout Tolerances
+  - name: "gdt_runout_circular"
+    filename: "gdt_runout_circular.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 0.5}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+      
+  - name: "gdt_runout_total"
+    filename: "gdt_runout_total.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      tolerance_value: {"type": "float", "min": 0.001, "max": 0.5}
+      datum: {"type": "string", "values": ["A", "B", "C"]}
+
+  # =============================================================================
+  # DIMENSION SYMBOLS
+  # =============================================================================
+  
+  - name: "diameter_symbol"
+    filename: "diameter_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      dimension_value: {"type": "float", "min": 0.1, "max": 1000.0}
+      tolerance_plus: {"type": "float", "min": 0.0, "max": 10.0}
+      tolerance_minus: {"type": "float", "min": 0.0, "max": 10.0}
+      
+  - name: "radius_symbol"
+    filename: "radius_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      radius_value: {"type": "float", "min": 0.1, "max": 500.0}
+      tolerance: {"type": "float", "min": 0.0, "max": 5.0}
+      
+  - name: "spherical_diameter"
+    filename: "spherical_diameter.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      diameter_value: {"type": "float", "min": 0.1, "max": 1000.0}
+      tolerance: {"type": "float", "min": 0.0, "max": 10.0}
+      
+  - name: "spherical_radius"
+    filename: "spherical_radius.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      radius_value: {"type": "float", "min": 0.1, "max": 500.0}
+      tolerance: {"type": "float", "min": 0.0, "max": 5.0}
+      
+  - name: "square_symbol"
+    filename: "square_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      side_length: {"type": "float", "min": 0.1, "max": 100.0}
+      tolerance: {"type": "float", "min": 0.0, "max": 2.0}
+      
+  - name: "arc_length"
+    filename: "arc_length.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      arc_length: {"type": "float", "min": 0.1, "max": 1000.0}
+      tolerance: {"type": "float", "min": 0.0, "max": 5.0}
+      
+  - name: "depth_symbol"
+    filename: "depth_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      depth_value: {"type": "float", "min": 0.1, "max": 100.0}
+      tolerance: {"type": "float", "min": 0.0, "max": 2.0}
+      
+  - name: "slope"
+    filename: "slope.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      slope_ratio: {"type": "string", "pattern": "^\\d+:\\d+$"}
+      angle_degrees: {"type": "float", "min": 0.0, "max": 90.0}
+
+  # =============================================================================
+  # SURFACE FINISH SYMBOLS
+  # =============================================================================
+  
+  - name: "surface_triangle"
     filename: "surface_triangle.svg"
     w_mm: 6.0
     h_mm: 6.0
     params:
-      roughness_ra: {"type": "float", "min": 0.1, "max": 25.0}
-      machining_allowance: {"type": "float", "min": 0.0, "max": 5.0}
+      surface_roughness: {"type": "float", "min": 0.1, "max": 50.0}
+      machining_required: {"type": "boolean"}
       
-  # Thread callouts
+  - name: "surface_roughness_ra"
+    filename: "surface_roughness_ra.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      ra_value: {"type": "float", "min": 0.05, "max": 50.0}
+      measurement_length: {"type": "float", "min": 0.1, "max": 25.0}
+      
+  - name: "surface_machining_required"
+    filename: "surface_machining_required.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      removal_allowance: {"type": "float", "min": 0.1, "max": 10.0}
+      process: {"type": "string", "values": ["turned", "milled", "ground"]}
+      
+  - name: "surface_machining_prohibited"
+    filename: "surface_machining_prohibited.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      surface_condition: {"type": "string", "values": ["as_cast", "as_forged", "as_rolled"]}
+      
+  - name: "surface_lay_parallel"
+    filename: "surface_lay_parallel.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      lay_direction: {"type": "float", "min": 0.0, "max": 360.0}
+      
+  - name: "surface_lay_perpendicular"
+    filename: "surface_lay_perpendicular.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      lay_direction: {"type": "float", "min": 0.0, "max": 360.0}
+      
+  - name: "surface_lay_angular"
+    filename: "surface_lay_angular.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      lay_angle: {"type": "float", "min": 0.0, "max": 360.0}
+      
+  - name: "surface_lay_multidirectional"
+    filename: "surface_lay_multidirectional.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      pattern_type: {"type": "string", "values": ["crosshatch", "multidirectional", "random"]}
+
+  # =============================================================================
+  # THREADING SYMBOLS
+  # =============================================================================
+  
   - name: "thread_metric"
     filename: "thread_metric.svg"
     w_mm: 20.0
     h_mm: 8.0
     params:
-      thread_size: {"type": "enum", "values": ["M6", "M8", "M10", "M12", "M16", "M20"]}
-      pitch: {"type": "float", "min": 0.5, "max": 2.5}
+      thread_size: {"type": "string", "pattern": "^M\\d+(\\.\\d+)?$"}
+      pitch: {"type": "float", "min": 0.2, "max": 6.0}
+      thread_class: {"type": "string", "values": ["4H", "5H", "6H", "7H", "8H"]}
+      length: {"type": "float", "min": 1.0, "max": 200.0}
       
-  # Basic geometric symbols
-  - name: "diameter"
-    filename: "diameter_symbol.svg"
-    w_mm: 6.0
-    h_mm: 6.0
-    params: {}
+  - name: "thread_imperial"
+    filename: "thread_imperial.svg"
+    w_mm: 20.0
+    h_mm: 8.0
+    params:
+      thread_designation: {"type": "string", "pattern": "^\\d+[/-]\\d+-\\d+[A-Z]*$"}
+      thread_class: {"type": "string", "values": ["1A", "1B", "2A", "2B", "3A", "3B"]}
+      length: {"type": "float", "min": 0.25, "max": 8.0}
       
-  - name: "radius"
-    filename: "radius_symbol.svg"
-    w_mm: 6.0
-    h_mm: 6.0
-    params: {}
+  - name: "thread_pipe"
+    filename: "thread_pipe.svg"
+    w_mm: 20.0
+    h_mm: 8.0
+    params:
+      pipe_size: {"type": "string", "pattern": "^\\d+[/-]?\\d*\\\"?$"}
+      thread_type: {"type": "string", "values": ["NPT", "NPTF", "BSPT", "BSPP"]}
 
-# Schema version for compatibility
-schema_version: "1.0"
+  # =============================================================================
+  # WELDING SYMBOLS
+  # =============================================================================
+  
+  - name: "weld_fillet"
+    filename: "weld_fillet.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      weld_size: {"type": "float", "min": 1.0, "max": 25.0}
+      weld_length: {"type": "float", "min": 5.0, "max": 1000.0}
+      pitch: {"type": "float", "min": 10.0, "max": 500.0}
+      
+  - name: "weld_groove"
+    filename: "weld_groove.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      groove_angle: {"type": "float", "min": 15.0, "max": 90.0}
+      root_opening: {"type": "float", "min": 0.0, "max": 10.0}
+      
+  - name: "weld_groove_bevel"
+    filename: "weld_groove_bevel.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      bevel_angle: {"type": "float", "min": 15.0, "max": 45.0}
+      root_face: {"type": "float", "min": 0.0, "max": 5.0}
+      
+  - name: "weld_groove_u"
+    filename: "weld_groove_u.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      groove_radius: {"type": "float", "min": 1.0, "max": 10.0}
+      root_opening: {"type": "float", "min": 0.0, "max": 5.0}
+      
+  - name: "weld_groove_v"
+    filename: "weld_groove_v.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      groove_angle: {"type": "float", "min": 30.0, "max": 90.0}
+      root_opening: {"type": "float", "min": 0.0, "max": 8.0}
+      
+  - name: "weld_plug"
+    filename: "weld_plug.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      hole_diameter: {"type": "float", "min": 2.0, "max": 50.0}
+      fill_depth: {"type": "float", "min": 1.0, "max": 25.0}
+      
+  - name: "weld_spot"
+    filename: "weld_spot.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      spot_diameter: {"type": "float", "min": 2.0, "max": 15.0}
+      nugget_diameter: {"type": "float", "min": 1.0, "max": 12.0}
+      
+  - name: "weld_seam"
+    filename: "weld_seam.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      seam_width: {"type": "float", "min": 1.0, "max": 20.0}
+      seam_length: {"type": "float", "min": 5.0, "max": 1000.0}
+      
+  - name: "weld_back"
+    filename: "weld_back.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      back_weld_size: {"type": "float", "min": 1.0, "max": 15.0}
+      
+  - name: "weld_all_around"
+    filename: "weld_all_around.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      symbol_only: {"type": "boolean"}
+      
+  - name: "weld_field"
+    filename: "weld_field.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      field_weld_flag: {"type": "boolean"}
+
+  # =============================================================================
+  # MACHINING SYMBOLS
+  # =============================================================================
+  
+  - name: "counterbore"
+    filename: "counterbore.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      cbore_diameter: {"type": "float", "min": 2.0, "max": 50.0}
+      cbore_depth: {"type": "float", "min": 0.5, "max": 25.0}
+      
+  - name: "counterbore_symbol"
+    filename: "counterbore_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      symbol_only: {"type": "boolean"}
+      
+  - name: "countersink"
+    filename: "countersink.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      csink_diameter: {"type": "float", "min": 2.0, "max": 30.0}
+      csink_angle: {"type": "float", "min": 60.0, "max": 120.0}
+      
+  - name: "countersink_symbol"
+    filename: "countersink_symbol.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      symbol_only: {"type": "boolean"}
+      
+  - name: "spotface_symbol"
+    filename: "spotface_symbol.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      sf_diameter: {"type": "float", "min": 5.0, "max": 100.0}
+      sf_depth: {"type": "float", "min": 0.1, "max": 5.0}
+
+  # =============================================================================
+  # FRAME COMPONENTS
+  # =============================================================================
+  
+  - name: "frame_left"
+    filename: "frame_left.svg"
+    w_mm: 2.0
+    h_mm: 8.0
+    params:
+      frame_height: {"type": "float", "min": 6.0, "max": 12.0}
+      
+  - name: "frame_right"
+    filename: "frame_right.svg"
+    w_mm: 2.0
+    h_mm: 8.0
+    params:
+      frame_height: {"type": "float", "min": 6.0, "max": 12.0}
+      
+  - name: "frame_separator"
+    filename: "frame_separator.svg"
+    w_mm: 1.0
+    h_mm: 8.0
+    params:
+      separator_height: {"type": "float", "min": 6.0, "max": 12.0}
+      
+  - name: "frame_datum_target"
+    filename: "frame_datum_target.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      target_designation: {"type": "string", "pattern": "^[A-Z]\\d+$"}
+
+  # =============================================================================
+  # DRAWING ELEMENTS
+  # =============================================================================
+  
+  - name: "centerline"
+    filename: "centerline.svg"
+    w_mm: 15.0
+    h_mm: 2.0
+    params:
+      line_length: {"type": "float", "min": 5.0, "max": 500.0"}
+      dash_pattern: {"type": "string", "values": ["long-short", "short-long"]}
+      
+  - name: "center_line"
+    filename: "center_line.svg"
+    w_mm: 15.0
+    h_mm: 2.0
+    params:
+      line_length: {"type": "float", "min": 5.0, "max": 500.0}
+      
+  - name: "hidden_line"
+    filename: "hidden_line.svg"
+    w_mm: 15.0
+    h_mm: 2.0
+    params:
+      line_length: {"type": "float", "min": 5.0, "max": 500.0}
+      dash_length: {"type": "float", "min": 2.0, "max": 8.0}
+      
+  - name: "phantom_line"
+    filename: "phantom_line.svg"
+    w_mm: 15.0
+    h_mm: 2.0
+    params:
+      line_length: {"type": "float", "min": 5.0, "max": 500.0"}
+      
+  - name: "break_line_long"
+    filename: "break_line_long.svg"
+    w_mm: 20.0
+    h_mm: 4.0
+    params:
+      break_length: {"type": "float", "min": 10.0, "max": 200.0"}
+      
+  - name: "break_line_short"
+    filename: "break_line_short.svg"
+    w_mm: 8.0
+    h_mm: 4.0
+    params:
+      break_length: {"type": "float", "min": 3.0, "max": 20.0"}
+      
+  - name: "cutting_plane"
+    filename: "cutting_plane.svg"
+    w_mm: 20.0
+    h_mm: 4.0
+    params:
+      cut_direction: {"type": "float", "min": 0.0, "max": 360.0"}
+      
+  - name: "section_line_a"
+    filename: "section_line_a.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      section_label: {"type": "string", "pattern": "^[A-Z]$"}
+      
+  - name: "section_line_b"
+    filename: "section_line_b.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      section_label: {"type": "string", "pattern": "^[A-Z]$"}
+      
+  - name: "view_arrow"
+    filename: "view_arrow.svg"
+    w_mm: 8.0
+    h_mm: 6.0
+    params:
+      arrow_direction: {"type": "float", "min": 0.0, "max": 360.0"}
+      view_label: {"type": "string", "pattern": "^[A-Z]$"}
+      
+  - name: "section_pattern"
+    filename: "section_pattern.svg"
+    w_mm: 10.0
+    h_mm: 10.0
+    params:
+      pattern_angle: {"type": "float", "min": 0.0, "max": 180.0}
+      line_spacing: {"type": "float", "min": 0.5, "max": 3.0}
+
+  # =============================================================================
+  # ANNOTATION SYMBOLS
+  # =============================================================================
+  
+  - name: "revision_cloud"
+    filename: "revision_cloud.svg"
+    w_mm: 12.0
+    h_mm: 8.0
+    params:
+      revision_number: {"type": "string", "pattern": "^[A-Z0-9]+$"}
+      cloud_size: {"type": "string", "values": ["small", "medium", "large"]}
+      
+  - name: "revision_triangle"
+    filename: "revision_triangle.svg"
+    w_mm: 6.0
+    h_mm: 6.0
+    params:
+      revision_letter: {"type": "string", "pattern": "^[A-Z]$"}
+      
+  - name: "measurement_point"
+    filename: "measurement_point.svg"
+    w_mm: 4.0
+    h_mm: 4.0
+    params:
+      point_type: {"type": "string", "values": ["cross", "circle", "square"]}
+      
+  - name: "inspection_stamp"
+    filename: "inspection_stamp.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      stamp_text: {"type": "string", "maxLength": 10}
+      
+  - name: "critical_dimension"
+    filename: "critical_dimension.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      dimension_value: {"type": "float", "min": 0.1, "max": 1000.0"}
+      critical_flag: {"type": "boolean"}
+      
+  - name: "reference_dimension"
+    filename: "reference_dimension.svg"
+    w_mm: 10.0
+    h_mm: 6.0
+    params:
+      ref_value: {"type": "float", "min": 0.1, "max": 1000.0"}
+      reference_only: {"type": "boolean"}
+      
+  - name: "statistical_tolerance"
+    filename: "statistical_tolerance.svg"
+    w_mm: 12.0
+    h_mm: 6.0
+    params:
+      statistical_method: {"type": "string", "values": ["SPC", "Cpk", "statistical"]}
+      
+  - name: "projected_tolerance_zone"
+    filename: "projected_tolerance_zone.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      projection_length: {"type": "float", "min": 1.0, "max": 100.0"}
+      
+  - name: "conical_taper"
+    filename: "conical_taper.svg"
+    w_mm: 12.0
+    h_mm: 6.0
+    params:
+      taper_ratio: {"type": "string", "pattern": "^\\d+:\\d+$"}
+      taper_angle: {"type": "float", "min": 0.1, "max": 45.0"}
+      
+  - name: "scale_indicator"
+    filename: "scale_indicator.svg"
+    w_mm: 15.0
+    h_mm: 4.0
+    params:
+      scale_ratio: {"type": "string", "pattern": "^\\d+:\\d+$"}
+
+  # =============================================================================
+  # TITLE BLOCK ELEMENTS
+  # =============================================================================
+  
+  - name: "title_block_corner"
+    filename: "title_block_corner.svg"
+    w_mm: 8.0
+    h_mm: 8.0
+    params:
+      corner_type: {"type": "string", "values": ["rounded", "square", "chamfered"]}
+      
+  - name: "title_block_line_h"
+    filename: "title_block_line_h.svg"
+    w_mm: 20.0
+    h_mm: 1.0
+    params:
+      line_length: {"type": "float", "min": 10.0, "max": 200.0"}
+      
+  - name: "title_block_line_v"
+    filename: "title_block_line_v.svg"
+    w_mm: 1.0
+    h_mm: 20.0
+    params:
+      line_length: {"type": "float", "min": 10.0, "max": 200.0"}
+      
+  - name: "title_block_text"
+    filename: "title_block_text.svg"
+    w_mm: 25.0
+    h_mm: 6.0
+    params:
+      text_content: {"type": "string", "maxLength": 50}
+      text_size: {"type": "float", "min": 2.5, "max": 7.0}

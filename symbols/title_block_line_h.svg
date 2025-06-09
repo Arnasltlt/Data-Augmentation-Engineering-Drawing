@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50mm" height="1mm" viewBox="0 0 50 1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title Block Horizontal Line -->
+  <path d="M 0 0.5 L 50 0.5" fill="none" stroke="black" stroke-width="0.3"/>
+</svg>

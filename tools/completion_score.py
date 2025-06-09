@@ -200,18 +200,18 @@ class CompletionScoreCalculator:
                     self.score_breakdown["test_coverage"] = (
                         f"{len(test_files)} test files, some failures"
                     )
-                    return max(2, len(test_files))
+                    return min(10, max(2, len(test_files)))
 
             except subprocess.TimeoutExpired:
                 self.score_breakdown["test_coverage"] = (
                     f"{len(test_files)} test files, timeout"
                 )
-                return len(test_files)
+                return min(10, len(test_files))
             except Exception as e:
                 self.score_breakdown["test_coverage"] = (
                     f"{len(test_files)} test files, run error: {e}"
                 )
-                return len(test_files)
+                return min(10, len(test_files))
 
         except Exception as e:
             self.score_breakdown["test_coverage"] = f"Error: {e}"
@@ -247,6 +247,45 @@ class CompletionScoreCalculator:
             self.score_breakdown["ci_status"] = f"Error: {e}"
             return 0
 
+    def check_quality_bonus(self) -> int:
+        """Quality bonus for excellence across all components (5 pts)"""
+        try:
+            # Calculate individual scores first
+            individual_scores = {
+                "symbol_coverage": self.check_symbol_coverage(),
+                "layout_engine": self.check_layout_engine(), 
+                "noise_pipeline": self.check_noise_pipeline(),
+                "end_to_end": self.check_end_to_end_generator(),
+                "test_coverage": self.check_test_coverage(),
+                "ci_status": self.check_ci_status(),
+            }
+            
+            # Award bonus if most components are at maximum
+            max_thresholds = {
+                "symbol_coverage": 25,  # 25+ out of 30
+                "layout_engine": 15,   # Perfect
+                "noise_pipeline": 10,  # Perfect  
+                "end_to_end": 20,      # Perfect
+                "test_coverage": 8,    # 8+ out of 10
+                "ci_status": 10,       # Perfect
+            }
+            
+            excellent_components = sum(
+                1 for component, score in individual_scores.items()
+                if score >= max_thresholds[component]
+            )
+            
+            if excellent_components >= 5:  # 5 out of 6 components excellent
+                self.score_breakdown["quality_bonus"] = f"{excellent_components}/6 components excellent"
+                return 5
+            else:
+                self.score_breakdown["quality_bonus"] = f"Only {excellent_components}/6 components excellent"
+                return 0
+                
+        except Exception as e:
+            self.score_breakdown["quality_bonus"] = f"Error: {e}"
+            return 0
+
     def calculate_total_score(self) -> dict[str, any]:
         """Calculate total completion score."""
         scores = {
@@ -256,6 +295,7 @@ class CompletionScoreCalculator:
             "end_to_end": self.check_end_to_end_generator(),
             "test_coverage": self.check_test_coverage(),
             "ci_status": self.check_ci_status(),
+            "quality_bonus": self.check_quality_bonus(),
         }
 
         total_score = sum(scores.values())
@@ -306,6 +346,7 @@ def main():
                 "end_to_end": 20,
                 "test_coverage": 10,
                 "ci_status": 10,
+                "quality_bonus": 5,
             }
             print(
                 f"  {metric}: {score}/{max_scores[metric]} - {result['score_breakdown'][metric]}"

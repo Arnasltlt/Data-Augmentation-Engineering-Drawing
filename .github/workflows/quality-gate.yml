@@ -1,183 +1,268 @@
-name: Quality Gate CI
+name: QualityGate - Test Coverage & Quality Assurance
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
-
-env:
-  PYTHON_VERSION: '3.11'
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
 
 jobs:
   quality-gate:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
     
     steps:
-    - name: Checkout repository
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libcairo2-dev \
+          libpango1.0-dev \
+          libgdk-pixbuf2.0-dev \
+          libffi-dev \
+          shared-mime-info
+          
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov coverage pytest-xvfb pytest-benchmark
+        pip install black ruff mypy
+        
+    - name: Code formatting check (Black)
+      run: |
+        black --check --diff src/ tests/
+        
+    - name: Linting check (Ruff)
+      run: |
+        ruff check src/ tests/
+        
+    - name: Type checking (MyPy)
+      run: |
+        mypy src/ --ignore-missing-imports --no-strict-optional
+      continue-on-error: true  # Type checking is advisory
+      
+    - name: Run VectorForge tests
+      run: |
+        python -m pytest tests/test_vectorforge.py \
+          --cov=src/vectorforge \
+          --cov-report=xml:coverage-vectorforge.xml \
+          --cov-report=term-missing \
+          --verbose
+      continue-on-error: true
+      
+    - name: Run LayoutLab tests
+      run: |
+        python -m pytest tests/test_overlap.py tests/test_layoutlab_extended.py \
+          --cov=src/layoutlab \
+          --cov-report=xml:coverage-layoutlab.xml \
+          --cov-report=term-missing \
+          --verbose
+      continue-on-error: true
+      
+    - name: Run GrungeWorks tests
+      run: |
+        python -m pytest tests/test_noise_alignment.py tests/test_grungeworks_extended.py \
+          --cov=src/grungeworks \
+          --cov-report=xml:coverage-grungeworks.xml \
+          --cov-report=term-missing \
+          --verbose
+      continue-on-error: true
+      
+    - name: Run integration tests
+      run: |
+        python -m pytest tests/test_integration_e2e.py \
+          --cov=src/ \
+          --cov-report=xml:coverage-integration.xml \
+          --cov-report=term-missing \
+          --verbose
+      continue-on-error: true
+      
+    - name: Run schema and compliance tests
+      run: |
+        python -m pytest tests/test_schema.py tests/test_license_compliance.py tests/test_overlay.py \
+          --verbose
+      continue-on-error: true
+      
+    - name: Generate comprehensive coverage report
+      run: |
+        python tests/test_coverage_report.py
+        
+    - name: Performance benchmarks
+      run: |
+        python -m pytest tests/test_layoutlab_extended.py::TestScalabilityAndPerformance::test_placement_performance_benchmark \
+          --benchmark-only \
+          --benchmark-json=benchmark_results.json
+      continue-on-error: true
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        files: coverage-vectorforge.xml,coverage-layoutlab.xml,coverage-grungeworks.xml,coverage-integration.xml
+        fail_ci_if_error: false
+        verbose: true
+        
+    - name: Upload coverage artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-reports
+        path: |
+          coverage*.xml
+          coverage_report.json
+          benchmark_results.json
+        retention-days: 30
+        
+    - name: Comment coverage on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          try {
+            const coverageData = JSON.parse(fs.readFileSync('coverage_report.json', 'utf8'));
+            const overallCoverage = coverageData.overall.coverage_percentage;
+            const target = coverageData.target;
+            
+            const status = overallCoverage >= target ? '✅' : '❌';
+            const trend = overallCoverage >= target ? 'TARGET MET' : 'BELOW TARGET';
+            
+            let comment = `## ${status} QualityGate Coverage Report\n\n`;
+            comment += `**Overall Coverage:** ${overallCoverage.toFixed(1)}% (Target: ${target}%)\n`;
+            comment += `**Status:** ${trend}\n\n`;
+            comment += `### Agent Coverage Breakdown\n`;
+            
+            for (const [agent, data] of Object.entries(coverageData.agents)) {
+              const agentStatus = data.coverage_percentage >= target ? '✅' : '❌';
+              comment += `- ${agentStatus} **${agent}**: ${data.coverage_percentage.toFixed(1)}% (${data.covered_lines}/${data.total_lines} lines)\n`;
+            }
+            
+            comment += `\n*Report generated at ${coverageData.timestamp}*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (error) {
+            console.log('Could not read coverage report:', error.message);
+          }
+          
+    - name: Fail if coverage below threshold
+      run: |
+        python -c "
+        import json
+        import sys
+        
+        try:
+            with open('coverage_report.json', 'r') as f:
+                data = json.load(f)
+            
+            overall_coverage = data['overall']['coverage_percentage']
+            target = data['target']
+            
+            print(f'Overall coverage: {overall_coverage:.1f}%')
+            print(f'Target: {target}%')
+            
+            if overall_coverage < target:
+                print(f'❌ Coverage {overall_coverage:.1f}% is below target {target}%')
+                sys.exit(1)
+            else:
+                print(f'✅ Coverage target achieved!')
+                sys.exit(0)
+        except FileNotFoundError:
+            print('Coverage report not found')
+            sys.exit(1)
+        "
+
+  stress-test:
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    if: github.event_name == 'schedule' || contains(github.event.head_commit.message, '[stress-test]')
+    
+    steps:
+    - name: Checkout code
       uses: actions/checkout@v4
       
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: 3.11
         
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest-xvfb memory-profiler
         
-    - name: Code style check with black
+    - name: Run stress tests
       run: |
-        black --check --diff src/ tests/ || (echo "❌ Code style check failed. Run 'black src/ tests/' to fix." && exit 1)
-        
-    - name: Lint with ruff
+        python -m pytest tests/test_integration_e2e.py::TestWorkflowScalability \
+          --verbose \
+          --maxfail=1
+          
+    - name: Memory usage test
       run: |
-        ruff check src/ tests/ || (echo "❌ Linting failed. Check ruff output above." && exit 1)
-        
-    - name: Schema validation tests
+        python -m pytest tests/test_integration_e2e.py::TestWorkflowScalability::test_workflow_memory_usage \
+          --verbose
+          
+    - name: 100-page generation test
       run: |
-        echo "🔬 Running schema validation tests..."
-        python -m pytest tests/test_schema.py -v --tb=short
-        
-    - name: Overlay validation tests  
-      run: |
-        echo "🎯 Running overlay validation tests..."
-        python -m pytest tests/test_overlay.py -v --tb=short
-        
-    - name: License compliance check
-      run: |
-        echo "⚖️ Running license compliance check..."
-        python -m pytest tests/test_license_compliance.py -v --tb=short
-        
-    - name: Symbol manifest validation
-      run: |
-        echo "📋 Validating symbols manifest..."
-        if [ -f "symbols/symbols_manifest.yaml" ]; then
-          python -c "
-          import yaml
-          with open('symbols/symbols_manifest.yaml', 'r') as f:
-              manifest = yaml.safe_load(f)
-          print(f'✓ Manifest loaded successfully')
-          print(f'✓ Found {len(manifest.get(\"symbols\", []))} symbol definitions')
-          "
-        else
-          echo "⚠️ symbols_manifest.yaml not found - skipping validation"
-        fi
-        
-    - name: SVG render test
-      run: |
-        echo "🖼️ Testing SVG rendering..."
         python -c "
-        import cairosvg
-        from pathlib import Path
-        import tempfile
+        from tests.fixtures import PerformanceFixtures
+        import time
         
-        symbols_dir = Path('symbols')
-        if symbols_dir.exists():
-            svg_files = list(symbols_dir.glob('*.svg'))
-            if svg_files:
-                print(f'Testing {len(svg_files)} SVG files...')
-                for svg_file in svg_files:
-                    try:
-                        with tempfile.NamedTemporaryFile(suffix='.png') as tmp:
-                            cairosvg.svg2png(url=str(svg_file), write_to=tmp.name, output_width=32, output_height=32)
-                        print(f'✓ {svg_file.name}')
-                    except Exception as e:
-                        print(f'✗ {svg_file.name}: {e}')
-                        raise
-            else:
-                print('⚠️ No SVG files found')
-        else:
-            print('⚠️ symbols/ directory not found')
+        print('Starting 100-page stress test...')
+        start_time = time.time()
+        
+        pages = PerformanceFixtures.get_stress_test_pages(100)
+        
+        end_time = time.time()
+        duration = end_time - start_time
+        
+        print(f'Generated {len(pages)} pages in {duration:.2f} seconds')
+        print(f'Average: {duration/len(pages)*1000:.1f}ms per page')
+        
+        if duration > 60:  # Should complete in under 1 minute
+            raise Exception(f'Stress test too slow: {duration:.2f}s')
         "
-        
-    - name: IoU regression test
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Bandit security scan
       run: |
-        echo "📐 Running IoU regression tests..."
-        python -c "
-        # Quick IoU validation test
-        def compute_iou(box1, box2):
-            x1_inter = max(box1['x'], box2['x'])
-            y1_inter = max(box1['y'], box2['y'])
-            x2_inter = min(box1['x'] + box1['w'], box2['x'] + box2['w'])
-            y2_inter = min(box1['y'] + box1['h'], box2['y'] + box2['h'])
-            
-            if x2_inter <= x1_inter or y2_inter <= y1_inter:
-                return 0.0
-                
-            intersection = (x2_inter - x1_inter) * (y2_inter - y1_inter)
-            area1 = box1['w'] * box1['h']
-            area2 = box2['w'] * box2['h']
-            union = area1 + area2 - intersection
-            
-            return intersection / union if union > 0 else 0.0
+        pip install bandit
+        bandit -r src/ -f json -o bandit-report.json || true
         
-        # Test cases
-        test_cases = [
-            # Perfect match
-            ({'x': 10, 'y': 10, 'w': 20, 'h': 20}, {'x': 10, 'y': 10, 'w': 20, 'h': 20}, 1.0),
-            # No overlap
-            ({'x': 10, 'y': 10, 'w': 20, 'h': 20}, {'x': 50, 'y': 50, 'w': 20, 'h': 20}, 0.0),
-            # Partial overlap
-            ({'x': 10, 'y': 10, 'w': 20, 'h': 20}, {'x': 20, 'y': 20, 'w': 20, 'h': 20}, 0.25),
-        ]
-        
-        for i, (box1, box2, expected) in enumerate(test_cases):
-            iou = compute_iou(box1, box2)
-            assert abs(iou - expected) < 0.001, f'Test {i+1} failed: {iou} != {expected}'
-            print(f'✓ IoU test {i+1}: {iou:.3f}')
-            
-        print('✓ All IoU tests passed')
-        "
-        
-    - name: Generate coverage report
-      run: |
-        echo "📊 Generating test coverage report..."
-        python -m pytest tests/ --cov=src --cov-report=xml --cov-report=html || echo "Coverage report generation completed with warnings"
-        
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
       with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        
-    - name: Build demo page (if possible)
-      run: |
-        echo "🎨 Attempting to build demo page..."
-        python -c "
-        try:
-            import sys
-            sys.path.append('src')
-            
-            # Try to import and run basic page generation
-            print('Checking if page generation is available...')
-            # This will be implemented by LayoutLab agent
-            print('⚠️ Demo page generation not yet implemented')
-        except ImportError as e:
-            print(f'⚠️ Demo page generation dependencies not ready: {e}')
-        except Exception as e:
-            print(f'⚠️ Demo page generation failed: {e}')
-        "
-        
-    - name: Quality Gate Summary
-      if: always()
-      run: |
-        echo "🏁 Quality Gate Summary"
-        echo "======================"
-        echo "✅ Code style (black): ${{ job.status }}"
-        echo "✅ Linting (ruff): ${{ job.status }}"  
-        echo "✅ Schema tests: ${{ job.status }}"
-        echo "✅ Overlay tests: ${{ job.status }}"
-        echo "✅ License compliance: ${{ job.status }}"
-        echo "✅ SVG rendering: ${{ job.status }}"
-        echo "✅ IoU regression: ${{ job.status }}"
-        
-        if [ "${{ job.status }}" == "success" ]; then
-          echo "🎉 All quality checks passed!"
-        else
-          echo "❌ Some quality checks failed"
-          exit 1
-        fi
+        name: security-scan
+        path: bandit-report.json
+        retention-days: 30

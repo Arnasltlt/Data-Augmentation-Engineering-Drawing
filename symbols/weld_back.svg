@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="8mm" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- Backing Weld Symbol -->
+  <path d="M 1 3 L 7 3 L 7 5 L 1 5 Z M 1 5.5 L 7 5.5 L 7 6.5 L 1 6.5 Z" fill="black" stroke="black" stroke-width="0.3"/>
+</svg>

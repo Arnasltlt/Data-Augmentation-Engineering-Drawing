@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="8mm" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- GD&T Perpendicularity Symbol -->
+  <line x1="4" y1="1.5" x2="4" y2="6.5" stroke="black" stroke-width="0.2"/>
+  <line x1="1.5" y1="6" x2="6.5" y2="6" stroke="black" stroke-width="0.2"/>
+</svg>

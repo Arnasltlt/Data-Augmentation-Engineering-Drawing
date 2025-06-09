@@ -1,0 +1,105 @@
+{
+    "geometry": {
+        "lines": [
+            {"start": [0, 0], "end": [150, 0]},
+            {"start": [150, 0], "end": [150, 100]},
+            {"start": [150, 100], "end": [0, 100]},
+            {"start": [0, 100], "end": [0, 0]}
+        ],
+        "circles": [
+            {"center": [75, 50], "radius": 20},
+            {"center": [30, 30], "radius": 5},
+            {"center": [120, 30], "radius": 5},
+            {"center": [30, 70], "radius": 5},
+            {"center": [120, 70], "radius": 5}
+        ],
+        "arcs": [
+            {"center": [75, 0], "radius": 15, "start_angle": 0, "end_angle": 180}
+        ],
+        "rectangles": [
+            {"corner1": [60, 40], "corner2": [90, 60]}
+        ]
+    },
+    "annotations": {
+        "dimensions": [
+            {
+                "type": "linear",
+                "p1": [0, 100],
+                "p2": [150, 100],
+                "base": [75, 115]
+            },
+            {
+                "type": "linear", 
+                "p1": [150, 0],
+                "p2": [150, 100],
+                "base": [165, 50]
+            },
+            {
+                "type": "diameter",
+                "center": [75, 50],
+                "radius": 20,
+                "location": [35, 75]
+            },
+            {
+                "type": "diameter",
+                "center": [30, 30],
+                "radius": 5,
+                "location": [15, 45]
+            }
+        ],
+        "symbols": [
+            {
+                "name": "surface_triangle",
+                "location": [5, 102],
+                "rotation": 0,
+                "scale": 1.0
+            },
+            {
+                "name": "gdt_flatness",
+                "location": [155, 50],
+                "rotation": 0,
+                "scale": 1.2
+            },
+            {
+                "name": "diameter_symbol",
+                "location": [25, 75],
+                "rotation": 0,
+                "scale": 1.0
+            },
+            {
+                "name": "thread_metric",
+                "location": [65, 25],
+                "rotation": 0,
+                "scale": 0.8
+            },
+            {
+                "name": "weld_fillet",
+                "location": [100, 85],
+                "rotation": 0,
+                "scale": 1.0
+            }
+        ],
+        "notes": [
+            {
+                "text": "ALL DIMENSIONS IN MM",
+                "location": [10, 10],
+                "height": 3.5
+            },
+            {
+                "text": "MATERIAL: STEEL A36",
+                "location": [10, 5],
+                "height": 3.0
+            }
+        ]
+    },
+    "title_block": {
+        "drawing_title": "FLANGED COUPLING",
+        "drawing_number": "FC-001",
+        "scale": "1:2",
+        "date": "2024-12-09",
+        "drawn_by": "AI Generator",
+        "checked_by": "Quality System",
+        "material": "A36 Steel",
+        "finish": "Mill Finish"
+    }
+}

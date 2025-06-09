@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30mm" height="8mm" viewBox="0 0 30 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title Block Text Field -->
+  <rect x="0.5" y="0.5" width="29" height="7" fill="none" stroke="black" stroke-width="0.2"/>
+  <text x="15" y="5" text-anchor="middle" font-family="Arial, sans-serif" font-size="2" fill="black">TITLE</text>
+</svg>

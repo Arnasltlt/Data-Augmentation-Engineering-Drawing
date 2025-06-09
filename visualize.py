@@ -1,76 +1,41 @@
-import cv2
-import os
-import glob
-import json
-import math
-import numpy as np
+import ezdxf
+from ezdxf.addons.drawing import RenderContext, Frontend
+from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
+import matplotlib.pyplot as plt
 
+def convert_dxf_to_png(dxf_path, png_path):
+    """
+    Converts a DXF file to a PNG image.
+    """
+    try:
+        print(f"Loading DXF from: {dxf_path}")
+        # Load the DXF document
+        doc = ezdxf.readfile(dxf_path)
+        msp = doc.modelspace()
+        print("DXF loaded successfully.")
 
-def new_coord(cur_x, cur_y, offset_x, offset_y, mul_x, mul_y):
-    new_x = (cur_x + offset_x) * mul_x + 105
-    new_y = (cur_y + offset_y) * mul_y + 5
-    return (int(new_x) - 100, 600 - int(new_y))
+        # Create a matplotlib backend
+        print("Creating matplotlib backend...")
+        fig = plt.figure()
+        ax = fig.add_axes([0, 0, 1, 1])
+        ctx = RenderContext(doc)
+        out = MatplotlibBackend(ax)
 
+        # Render the DXF
+        print("Rendering DXF...")
+        Frontend(ctx, out).draw_layout(msp, finalize=True)
+        print("DXF rendered.")
 
-def check_arrow(img_name, img_path, json_path, save_path):
-    output_path = save_path + '/' + img_name + '.png'
+        # Save the figure
+        print(f"Saving PNG to: {png_path}")
+        fig.savefig(png_path, dpi=300)
+        plt.close(fig)
+        print(f"Successfully converted {dxf_path} to {png_path}")
 
-    img = cv2.imread(img_path)
-    data = None
-    with open(json_path) as f:
-        data = json.load(f)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
-    color = (0, 255, 0)
-    thickness = 2
-
-    min_x = 1000
-    max_x = -1000
-    min_y = 1000
-    max_y = -1000
-    for line in data['line']:
-        min_x = min(min_x, line['start_x'], line['end_x'])
-        max_x = max(max_x, line['start_x'], line['end_x'])
-        min_y = min(min_y, line['start_y'], line['end_y'])
-        max_y = max(max_y, line['start_y'], line['end_y'])
-
-    # let min_x, min_y to be origin
-
-    offset_x = -min_x
-    offset_y = -min_y
-    # an offset is applied to all coordinates from JSON
-
-    mul_x = 590 / (max_x + offset_x)
-    mul_y = 590 / (max_y + offset_y)
-
-    for line in data['line']:
-        start_point = new_coord(
-            line['start_x'], line['start_y'], offset_x, offset_y, mul_x, mul_y)
-        end_point = new_coord(
-            line['end_x'], line['end_y'], offset_x, offset_y, mul_x, mul_y)
-        img = cv2.line(img, start_point, end_point, color, thickness)
-
-    for arrow in data['arrow']:
-        arrow_point = new_coord(
-            arrow['x'], arrow['y'], offset_x, offset_y, mul_x, mul_y)
-        img = cv2.circle(img, arrow_point, 2, color, thickness)
-
-    cv2.imwrite(output_path, img)
-    # cv2.imshow('ImageWindow', img)
-    # cv2.waitKey()
-
-
-if __name__ == "__main__":
-    img_path = './with_dash_png/*.png'
-    json_path_ori = './arrow_json_garbage'
-    save_path = './arrow_check'
-
-    if not os.path.isdir(save_path):
-        os.mkdir(save_path)
-
-    path = glob.glob(img_path)
-
-    for img in path:
-        if img.endswith('0.png'):
-            img_name = os.path.basename(img).split('.')[0]
-            json_path = json_path_ori + '/' + img_name + '.json'
-            check_arrow(img_name, img, json_path, save_path)
+if __name__ == '__main__':
+    # Example usage:
+    # convert_dxf_to_png('my_drawing.dxf', 'my_drawing.png')
+    pass

@@ -85,49 +85,20 @@ class GrungeWorksAgent:
             self.logger.error(f"Error converting PDF to PNG: {e}")
             return False
 
-    def process_page(self, pdf_path: str, json_path: str, noise_level: int = 1) -> bool:
-        """Process a PDF page with noise pipeline.
-
-        Args:
-            pdf_path: Path to input PDF file
-            json_path: Path to corresponding JSON ground truth
-            noise_level: Noise level (0-3) for preset filter stacks
-
-        Returns:
-            True if processing successful, False otherwise
-        """
+    def apply_noise_to_image(self, image_path: str, noise_level: int = 1) -> bool:
+        """Process a PNG file with the noise pipeline."""
         try:
-            # Extract SHA from filename for output naming
-            pdf_name = Path(pdf_path).stem
-            if pdf_name.startswith("page_"):
-                sha_prefix = pdf_name.split("_")[1]
-            else:
-                sha_prefix = "unknown"
-
-            output_dir = Path(pdf_path).parent
-            png_path = output_dir / f"page_{sha_prefix}.png"
-
-            # Convert PDF to PNG
-            if not self.convert_pdf_to_png(pdf_path, str(png_path)):
-                return False
-
             # Load image for noise processing
-            img = Image.open(png_path)
+            img = Image.open(image_path)
 
             # Apply noise pipeline based on level
             processed_img = self._apply_noise_pipeline(img, noise_level)
 
             # Save final image
-            processed_img.save(png_path)
-
-            # Verify JSON alignment (coordinate preservation)
-            if not self._verify_coordinate_alignment(json_path, png_path):
-                self.logger.warning(
-                    f"Coordinate alignment verification failed for {png_path}"
-                )
-
+            processed_img.save(image_path)
+            
             self.logger.info(
-                f"Processed page with noise level {noise_level}: {png_path}"
+                f"Processed page with noise level {noise_level}: {image_path}"
             )
             return True
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="8mm" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- GD&T Total Runout Symbol -->
+  <circle cx="4" cy="4" r="2.5" fill="none" stroke="black" stroke-width="0.2"/>
+  <line x1="1.5" y1="3.5" x2="6.5" y2="3.5" stroke="black" stroke-width="0.15"/>
+  <line x1="1.5" y1="4.5" x2="6.5" y2="4.5" stroke="black" stroke-width="0.15"/>
+  <polygon points="5.5,3 6.5,3.5 5.5,4" fill="black"/>
+  <polygon points="5.5,4.5 6.5,5 5.5,5.5" fill="black"/>
+</svg>
