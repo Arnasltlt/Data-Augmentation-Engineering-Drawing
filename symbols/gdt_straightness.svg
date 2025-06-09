@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8mm" height="8mm" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- GD&T Straightness Symbol - Emergency placeholder by RepoGuardian -->
+  <rect x="0.5" y="3" width="7" height="2" fill="none" stroke="black" stroke-width="0.2"/>
+  <line x1="1" y1="4" x2="7" y2="4" stroke="black" stroke-width="0.2"/>
+</svg>

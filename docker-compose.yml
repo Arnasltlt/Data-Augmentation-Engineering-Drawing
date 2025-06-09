@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  drawing-generator:
+    build: .
+    image: drawing-generator:latest
+    container_name: drawing-generator
+    volumes:
+      - ./out:/app/out
+      - ./symbols:/app/symbols:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["-n", "3", "--sheet-size", "A4", "--noise-level", "1"]
+    
+  # Development service with source mounted
+  drawing-generator-dev:
+    build: .
+    image: drawing-generator:latest
+    container_name: drawing-generator-dev
+    volumes:
+      - ./out:/app/out
+      - ./symbols:/app/symbols:ro
+      - ./src:/app/src
+      - ./generate.py:/app/generate.py
+    environment:
+      - PYTHONUNBUFFERED=1
+    profiles: ["dev"]

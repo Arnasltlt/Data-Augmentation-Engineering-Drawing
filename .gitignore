@@ -1,1 +1,33 @@
+# System files
 .DS_Store
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output directories
+out/
+*.pdf
+*.png
+*.svg
+!symbols/*.svg
+
+# Temporary files
+*.tmp
+*.log
+.pytest_cache/
+
+# Generated files
+completion_result.json
