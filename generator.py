@@ -929,10 +929,10 @@ def generate_solid_view(plan_path, output_path, projection_type="isometric", vis
 
     return True
 
-def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=False, validate=True):
+def generate_multiview_sheet(plan_path, output_path, paper_size="A3", sections=None, visualize=False, validate=True):
     """
     Generates a professional multi-view engineering drawing sheet.
-    This is the core function for Milestone 2: Multi-View Sheet functionality.
+    Enhanced for Milestone 3 with sections and hatching support.
     """
     if not MULTIVIEW_AVAILABLE:
         print("❌ Multi-view functionality requires multiview_layout module.")
@@ -967,9 +967,13 @@ def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=
         paper_size_enum = PaperSize(paper_size.upper())
         layout_engine = MultiViewLayout(paper_size_enum)
         
-        # Generate four-view layout
-        print(f"🏗️ Generating multi-view sheet on {paper_size}...")
-        view_placements, sheet_metadata = layout_engine.generate_four_view_sheet(plan)
+        # Generate layout with sections if provided
+        if sections:
+            print(f"🔧 Generating sectioned multi-view sheet with {len(sections)} sections...")
+            view_placements, sheet_metadata = layout_engine.generate_sectioned_multiview_sheet(plan, sections)
+        else:
+            print(f"🏗️ Generating standard multi-view sheet on {paper_size}...")
+            view_placements, sheet_metadata = layout_engine.generate_four_view_sheet(plan)
         
         if not view_placements:
             print("❌ No views generated for multi-view sheet")
@@ -979,8 +983,8 @@ def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=
         doc = ezdxf.new()
         msp = doc.modelspace()
         
-        # Set up layers including new ones for multi-view
-        setup_multiview_layers(doc)
+        # Set up layers including sectioning layers
+        setup_sectioned_multiview_layers(doc)
         
         # Generate border and title block
         border_data = layout_engine.generate_border_and_title_block()
@@ -1013,7 +1017,10 @@ def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=
         title_block_info = plan.get('title_block', {})
         add_title_block_text(msp, title_block_info, tb_x, tb_y, tb_w, tb_h, sheet_metadata)
         
-        # Add all views
+        # Add all views with section support
+        section_count = 0
+        standard_count = 0
+        
         print(f"📐 Adding {len(view_placements)} views to sheet...")
         for view_placement in view_placements:
             # Add view geometry
@@ -1023,6 +1030,50 @@ def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=
                 final_start = (start[0] + view_placement.x, start[1] + view_placement.y)
                 final_end = (end[0] + view_placement.x, end[1] + view_placement.y)
                 msp.add_line(start=final_start, end=final_end, dxfattribs={'layer': 'OUTLINE'})
+            
+            # Add hatching for section views
+            if view_placement.is_section and view_placement.hatch_lines:
+                print(f"  🎨 Adding {len(view_placement.hatch_lines)} hatch lines for {view_placement.label}")
+                for hatch_line in view_placement.hatch_lines:
+                    start, end = hatch_line
+                    # Translate hatch line to view position
+                    final_start = (start[0] + view_placement.x, start[1] + view_placement.y)
+                    final_end = (end[0] + view_placement.x, end[1] + view_placement.y)
+                    msp.add_line(start=final_start, end=final_end, dxfattribs={'layer': 'HATCH'})
+                section_count += 1
+            else:
+                standard_count += 1
+            
+            # Add cutting plane indicators for parent views
+            if view_placement.cutting_plane_indicators:
+                for plane_name, indicators in view_placement.cutting_plane_indicators.items():
+                    # Add cutting plane lines
+                    for cutting_line in indicators.get('cutting_lines', []):
+                        start = (cutting_line['start'][0] + view_placement.x, cutting_line['start'][1] + view_placement.y)
+                        end = (cutting_line['end'][0] + view_placement.x, cutting_line['end'][1] + view_placement.y)
+                        msp.add_line(start=start, end=end, 
+                                   dxfattribs={'layer': 'CUTTING_PLANE', 'linetype': 'PHANTOM'})
+                    
+                    # Add section arrows
+                    for arrow in indicators.get('section_arrows', []):
+                        start = (arrow['start'][0] + view_placement.x, arrow['start'][1] + view_placement.y)
+                        end = (arrow['end'][0] + view_placement.x, arrow['end'][1] + view_placement.y)
+                        msp.add_line(start=start, end=end, dxfattribs={'layer': 'CUTTING_PLANE'})
+                        # Add arrowhead (simplified)
+                        msp.add_circle(center=end, radius=1.0, dxfattribs={'layer': 'CUTTING_PLANE'})
+                    
+                    # Add section labels
+                    for label in indicators.get('section_labels', []):
+                        pos = (label['position'][0] + view_placement.x, label['position'][1] + view_placement.y)
+                        msp.add_text(
+                            label['text'],
+                            dxfattribs={
+                                'height': 3.5,
+                                'insert': pos,
+                                'layer': 'SECTION_LABELS',
+                                'style': 'STANDARD'
+                            }
+                        )
         
         # Add view labels
         view_labels = layout_engine.add_view_labels()
@@ -1044,13 +1095,18 @@ def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=
         doc.saveas(output_path)
         print(f"✅ Successfully generated multi-view sheet: {output_path}")
         
-        # Print layout summary
+        # Print enhanced layout summary
         summary = layout_engine.get_layout_summary()
         print(f"📊 Layout Summary:")
         print(f"   Paper: {summary['paper_dimensions']}")
-        print(f"   Views: {summary['view_count']}")
+        print(f"   Total Views: {summary['view_count']} ({standard_count} standard, {section_count} sections)")
+        
+        if sheet_metadata.get('sections_enabled'):
+            print(f"   🔧 Sections: {sheet_metadata.get('section_count', 0)} cutting planes with hatching")
+        
         for view in summary['views']:
-            print(f"   - {view['label']}: {view['position']} @ {view['scale']}x")
+            view_type = "SECTION" if any(vp.is_section and vp.label == view['label'] for vp in view_placements) else "STANDARD"
+            print(f"   - {view['label']} ({view_type}): {view['position']} @ {view['scale']}x")
 
         if visualize:
             png_path = os.path.splitext(output_path)[0] + ".png"
@@ -1063,26 +1119,27 @@ def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=
         print(f"❌ Failed to generate multi-view sheet: {e}")
         return False
 
-def setup_multiview_layers(doc):
-    """Set up additional layers for multi-view drawings."""
-    # Set up standard layers first
-    setup_drawing_layers(doc)
+def setup_sectioned_multiview_layers(doc):
+    """Set up layers for sectioned multi-view drawings."""
+    # Set up standard multi-view layers first
+    setup_multiview_layers(doc)
     
-    # Add multi-view specific layers
-    additional_layers = [
-        ("BORDER", 1, "CONTINUOUS", 0.5),        # Red, continuous, thick border
-        ("TITLE_BLOCK", 7, "CONTINUOUS", 0.35),  # White, continuous, medium
-        ("VIEW_LABELS", 3, "CONTINUOUS", 0.25),  # Green, continuous, thin
+    # Add sectioning-specific layers
+    sectioning_layers = [
+        ("HATCH", 6, "CONTINUOUS", 0.18),          # Magenta, continuous, thin hatching
+        ("CUTTING_PLANE", 4, "PHANTOM", 0.5),      # Cyan, phantom, thick cutting plane
+        ("SECTION_LABELS", 2, "CONTINUOUS", 0.35), # Yellow, continuous, medium labels
+        ("SECTION_OUTLINE", 1, "CONTINUOUS", 0.7), # Red, continuous, thick section outline
     ]
     
-    for name, color, linetype, lineweight in additional_layers:
+    for name, color, linetype, lineweight in sectioning_layers:
         if name not in doc.layers:
             layer = doc.layers.add(name)
             layer.color = color
             layer.linetype = linetype
             layer.lineweight = int(lineweight * 100)
     
-    print("✅ Set up multi-view drawing layers")
+    print("✅ Set up sectioned multi-view drawing layers")
 
 def add_title_block_text(msp, title_block_info, tb_x, tb_y, tb_w, tb_h, sheet_metadata):
     """Add text content to the title block."""
@@ -1192,6 +1249,27 @@ def setup_paper_space(doc, paper_size: 'PaperSize'):
     # For now, we'll add a comment to the DXF
     pass
 
+def setup_multiview_layers(doc):
+    """Set up additional layers for multi-view drawings."""
+    # Set up standard layers first
+    setup_drawing_layers(doc)
+    
+    # Add multi-view specific layers
+    additional_layers = [
+        ("BORDER", 1, "CONTINUOUS", 0.5),        # Red, continuous, thick border
+        ("TITLE_BLOCK", 7, "CONTINUOUS", 0.35),  # White, continuous, medium
+        ("VIEW_LABELS", 3, "CONTINUOUS", 0.25),  # Green, continuous, thin
+    ]
+    
+    for name, color, linetype, lineweight in additional_layers:
+        if name not in doc.layers:
+            layer = doc.layers.add(name)
+            layer.color = color
+            layer.linetype = linetype
+            layer.lineweight = int(lineweight * 100)
+    
+    print("✅ Set up multi-view drawing layers")
+
 def main():
     parser = argparse.ArgumentParser(description="Intelligent Drawing Generator")
     parser.add_argument('--plan', type=str, help='Path to the JSON drawing plan.')
@@ -1214,6 +1292,13 @@ def main():
     parser.add_argument('--paper-size', type=str, default='A3',
                        choices=['A4', 'A3', 'A2', 'A1'],
                        help='Paper size for multi-view sheet (default: A3).')
+    
+    # Milestone 3: Sections & Hatching arguments
+    parser.add_argument('--sections', type=str, nargs='*',
+                       help='Add sections in format "name:direction:position" (e.g., "A:vertical_front:0.5")')
+    parser.add_argument('--section-material', type=str, default='steel',
+                       choices=['steel', 'aluminum', 'plastic', 'wood', 'concrete', 'rubber', 'glass', 'general'],
+                       help='Material for hatching pattern (default: steel).')
 
     args = parser.parse_args()
 
@@ -1261,9 +1346,41 @@ def main():
 
     # --- ROUTE TO CORRECT GENERATOR ---
     if args.multi_view:
-        # Use Multi-View Sheet Generator (Milestone 2)
-        print(f"🏗️ Generating multi-view sheet on {args.paper_size}...")
-        success = generate_multiview_sheet(plan_path, output_path, args.paper_size, args.visualize, validate=True)
+        # Parse sections if provided
+        sections = None
+        if args.sections:
+            sections = []
+            for section_spec in args.sections:
+                try:
+                    parts = section_spec.split(':')
+                    if len(parts) != 3:
+                        raise ValueError(f"Invalid section format: {section_spec}")
+                    
+                    name, direction, position_str = parts
+                    position = float(position_str)
+                    
+                    if not (0.0 <= position <= 1.0):
+                        raise ValueError(f"Position must be between 0.0 and 1.0: {position}")
+                    
+                    sections.append({
+                        "name": name.upper(),
+                        "direction": direction,
+                        "position": position,
+                        "material": args.section_material
+                    })
+                    print(f"  📐 Section {name}: {direction} at position {position}")
+                    
+                except ValueError as e:
+                    print(f"❌ Invalid section specification '{section_spec}': {e}")
+                    print("   Format: 'name:direction:position' (e.g., 'A:vertical_front:0.5')")
+                    return
+        
+        # Use Multi-View Sheet Generator (Milestone 2 & 3)
+        if sections:
+            print(f"🔧 Generating sectioned multi-view sheet with {len(sections)} sections on {args.paper_size}...")
+        else:
+            print(f"🏗️ Generating standard multi-view sheet on {args.paper_size}...")
+        success = generate_multiview_sheet(plan_path, output_path, args.paper_size, sections, args.visualize, validate=True)
         if not success:
             print("❌ Failed to generate multi-view sheet")
             return
