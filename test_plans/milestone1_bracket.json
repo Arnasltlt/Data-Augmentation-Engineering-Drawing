@@ -1,0 +1,49 @@
+{
+  "base_feature": {
+    "shape": "rectangle",
+    "width": 80,
+    "height": 60,
+    "thickness": 10
+  },
+  "modifying_features": [
+    {
+      "type": "hole",
+      "center": [20, 15],
+      "diameter": 6
+    },
+    {
+      "type": "hole", 
+      "center": [-20, 15],
+      "diameter": 6
+    },
+    {
+      "type": "slot",
+      "center": [0, -15],
+      "width": 8,
+      "length": 25
+    },
+    {
+      "type": "fillet",
+      "radius": 3,
+      "corners": ["all"]
+    },
+    {
+      "type": "counterbore",
+      "center": [0, 20],
+      "hole_diameter": 4,
+      "counterbore_diameter": 8,
+      "counterbore_depth": 2
+    }
+  ],
+  "title_block": {
+    "drawing_title": "Milestone 1 Test Bracket",
+    "drawing_number": "M1-TEST-001",
+    "material": "AL 6061-T6",
+    "finish": "AS MACHINED",
+    "tolerance": "0.1",
+    "scale": "1:1",
+    "revision": "A",
+    "date": "2024-01-15",
+    "drawn_by": "SolidBuilder"
+  }
+}

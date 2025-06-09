@@ -20,6 +20,20 @@ from ezdxf.math import Vec3
 from ezdxf import xref
 import io
 
+# Import the new 3D solid builder
+try:
+    from solidbuilder_ocp import SolidBuilder, ProjectionType
+    SOLID_BUILDER_AVAILABLE = True
+    print("✅ Using real OCP-based SolidBuilder")
+except ImportError:
+    try:
+        from solidbuilder_mock import SolidBuilder, ProjectionType
+        SOLID_BUILDER_AVAILABLE = True
+        print("⚠️ Using mock SolidBuilder (install cadquery and OCP for full 3D functionality)")
+    except ImportError:
+        print("❌ No SolidBuilder available")
+        SOLID_BUILDER_AVAILABLE = False
+
 def slugify(text):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,
@@ -795,6 +809,116 @@ def draw_title_block(msp, title_block_data):
         }
     )
 
+def generate_solid_view(plan_path, output_path, projection_type="isometric", visualize=False, validate=True):
+    """
+    Generates a DXF file from a 3D solid model with specified projection.
+    This is the core function for Milestone 1: 3D Core functionality.
+    """
+    if not SOLID_BUILDER_AVAILABLE:
+        print("❌ 3D Solid functionality requires cadquery and OCP packages.")
+        print("Install with: pip install cadquery OCP")
+        return False
+        
+    # Load and validate plan
+    with open(plan_path, 'r') as f:
+        plan = json.load(f)
+
+    if validate:
+        validator = DrawingPlanValidator()
+        is_valid, errors = validator.validate_plan(plan)
+        if not is_valid:
+            print("❌ Plan validation failed:")
+            for error in errors:
+                print(f"  - {error}")
+            return False
+        else:
+            print("✅ Plan validation successful")
+
+    # Ensure the output directory exists
+    output_dir = os.path.dirname(output_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Build 3D solid
+    print("🔧 Building 3D solid model...")
+    solid_builder = SolidBuilder()
+    
+    if not solid_builder.build_from_plan(plan):
+        print("❌ Failed to build 3D solid from plan")
+        return False
+    
+    # Get solid information
+    solid_info = solid_builder.get_solid_info()
+    print(f"📊 Solid Info: Volume={solid_info.get('volume', 0):.2f} mm³")
+    
+    # Generate projection
+    print(f"📐 Generating {projection_type} projection...")
+    try:
+        proj_type = ProjectionType(projection_type.lower())
+    except ValueError:
+        print(f"❌ Unknown projection type: {projection_type}")
+        print("Available types: isometric, front, top, right, back, bottom, left")
+        return False
+        
+    projection_edges = solid_builder.get_projection_edges(proj_type)
+    
+    if not projection_edges:
+        print("❌ Failed to generate projection edges")
+        return False
+    
+    # Create DXF document
+    doc = ezdxf.new()
+    msp = doc.modelspace()
+    
+    # Set up layers
+    setup_drawing_layers(doc)
+    
+    # Add projection edges to DXF
+    print(f"✏️ Rendering {len(projection_edges)} edges to DXF...")
+    for edge in projection_edges:
+        start, end = edge
+        msp.add_line(start=start, end=end, dxfattribs={'layer': 'OUTLINE'})
+    
+    # Add construction info as text
+    bbox = solid_info.get('bounding_box', {})
+    info_text = [
+        f"3D Solid - {projection_type.title()} View",
+        f"Volume: {solid_info.get('volume', 0):.1f} mm³",
+        f"Features: {len(solid_info.get('construction_history', []))}"
+    ]
+    
+    for i, text in enumerate(info_text):
+        msp.add_text(
+            text,
+            dxfattribs={
+                'height': 2.5,
+                'insert': (bbox.get('x_max', 100) + 10, bbox.get('y_max', 50) - i * 4),
+                'layer': 'TEXT'
+            }
+        )
+    
+    # Add title block if specified
+    if plan.get('title_block'):
+        title_block = plan['title_block'].copy()
+        title_block['drawing_title'] = f"{title_block.get('drawing_title', 'Untitled')} - {projection_type.title()}"
+        draw_title_block(msp, title_block)
+
+    # Save the DXF file
+    doc.saveas(output_path)
+    print(f"✅ Successfully generated 3D solid view: {output_path}")
+
+    # Export additional formats
+    step_path = os.path.splitext(output_path)[0] + ".step"
+    if solid_builder.export_step(step_path):
+        print(f"📦 Also exported STEP file: {step_path}")
+
+    if visualize:
+        png_path = os.path.splitext(output_path)[0] + ".png"
+        print(f"🖼️ Visualizing DXF to {png_path}...")
+        convert_dxf_to_png(output_path, png_path)
+
+    return True
+
 def main():
     parser = argparse.ArgumentParser(description="Intelligent Drawing Generator")
     parser.add_argument('--plan', type=str, help='Path to the JSON drawing plan.')
@@ -805,6 +929,12 @@ def main():
     parser.add_argument('--prompt', type=str, help='A natural language prompt for a drawing.')
     parser.add_argument('--random', action='store_true', help='Generate a drawing from a random prompt.')
     parser.add_argument('--api-key', type=str, help='OpenAI API key for AI Planner.')
+    
+    # Milestone 1: 3D Solid View arguments
+    parser.add_argument('--solid-view', action='store_true', help='Generate 3D solid view using OCP kernel.')
+    parser.add_argument('--projection', type=str, default='isometric', 
+                       choices=['isometric', 'front', 'top', 'right', 'back', 'bottom', 'left'],
+                       help='Projection type for solid view (default: isometric).')
 
     args = parser.parse_args()
 
@@ -850,7 +980,17 @@ def main():
         parser.error("You must specify a plan, prompt, or use the --random flag.")
         return
 
-    generate_from_plan(plan_path, output_path, args.visualize, validate=True)
+    # --- ROUTE TO CORRECT GENERATOR ---
+    if args.solid_view:
+        # Use 3D Solid View Generator (Milestone 1)
+        print(f"🚀 Generating 3D solid view with {args.projection} projection...")
+        success = generate_solid_view(plan_path, output_path, args.projection, args.visualize, validate=True)
+        if not success:
+            print("❌ Failed to generate 3D solid view")
+            return
+    else:
+        # Use traditional 2D generator
+        generate_from_plan(plan_path, output_path, args.visualize, validate=True)
 
     # Clean up temporary file if one was created
     if (args.prompt or args.random) and os.path.exists(plan_path):
