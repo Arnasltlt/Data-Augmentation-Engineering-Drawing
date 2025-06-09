@@ -44,27 +44,61 @@ class MockSolidBuilder:
             self.construction_history = []
             self.removed_area = 0
             
-            # Create base feature
-            base_feature = plan.get("base_feature")
-            if not base_feature:
-                print("❌ No base_feature found in plan")
-                return False
-                
-            if not self._create_base_feature(base_feature):
-                return False
-                
-            # Apply modifying features
-            modifying_features = plan.get("modifying_features", [])
-            for i, feature in enumerate(modifying_features):
-                try:
-                    if not self._apply_modifying_feature(feature):
-                        print(f"⚠️ Failed to apply modifying feature {i}: {feature.get('type')}")
-                        # Continue with other features instead of failing completely
-                except Exception as e:
-                    print(f"⚠️ Error applying feature {i}: {e}")
-                    continue
+            # Handle different plan structures
+            features = plan.get("features", {})
+            if not features:
+                # Fallback to legacy structure
+                base_feature = plan.get("base_feature")
+                if not base_feature:
+                    print("❌ No features or base_feature found in plan")
+                    return False
                     
-            print(f"✅ Successfully built mock 3D solid with {len(modifying_features)} features")
+                if not self._create_base_feature(base_feature):
+                    return False
+                    
+                # Apply modifying features
+                modifying_features = plan.get("modifying_features", [])
+                for i, feature in enumerate(modifying_features):
+                    try:
+                        if not self._apply_modifying_feature(feature):
+                            print(f"⚠️ Failed to apply modifying feature {i}: {feature.get('type')}")
+                            continue
+                    except Exception as e:
+                        print(f"⚠️ Error applying feature {i}: {e}")
+                        continue
+            else:
+                # Handle new plan structure with features dictionary
+                base_feature_created = False
+                feature_count = 0
+                
+                for feature_name, feature_data in features.items():
+                    feature_type = feature_data.get("type", "")
+                    
+                    # Check if this is a base feature
+                    if feature_type in ["rectangular_plate", "circular_plate"] or "base" in feature_name.lower():
+                        if not base_feature_created:
+                            if not self._create_base_feature_from_new_format(feature_data):
+                                print(f"❌ Failed to create base feature: {feature_name}")
+                                return False
+                            base_feature_created = True
+                            continue
+                    
+                    # Apply as modifying feature
+                    try:
+                        if self._apply_modifying_feature_from_new_format(feature_data):
+                            feature_count += 1
+                        else:
+                            print(f"⚠️ Failed to apply feature {feature_name}: {feature_type}")
+                    except Exception as e:
+                        print(f"⚠️ Error applying feature {feature_name}: {e}")
+                        continue
+                
+                if not base_feature_created:
+                    print("❌ No base feature found in plan")
+                    return False
+                    
+                print(f"✅ Successfully built mock 3D solid with {feature_count} modifying features")
+                    
             return True
             
         except Exception as e:
@@ -485,6 +519,181 @@ class MockSolidBuilder:
         except Exception as e:
             print(f"❌ Failed to export STL: {e}")
             return False
+
+    def _create_base_feature_from_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Create base feature from new plan format."""
+        feature_type = feature_data.get("type", "")
+        
+        try:
+            if feature_type == "rectangular_plate":
+                width = feature_data.get("width", 100)
+                height = feature_data.get("height", 100) 
+                thickness = feature_data.get("thickness", 10)
+                
+                # Mock solid data
+                self.solid_data = {
+                    "type": "box",
+                    "width": width,
+                    "height": height,
+                    "thickness": thickness
+                }
+                
+                # Update bounding box
+                self.bounding_box = {
+                    "x_min": -width/2, "x_max": width/2,
+                    "y_min": -height/2, "y_max": height/2,
+                    "z_min": 0, "z_max": thickness
+                }
+                
+                self.construction_history.append(f"Base plate: {width}x{height}x{thickness}")
+                print(f"✅ Created mock base plate: {width}x{height}x{thickness} mm")
+                return True
+                
+            elif feature_type == "circular_plate":
+                diameter = feature_data.get("diameter", 100)
+                thickness = feature_data.get("thickness", 10)
+                
+                self.solid_data = {
+                    "type": "cylinder",
+                    "diameter": diameter,
+                    "thickness": thickness
+                }
+                
+                # Update bounding box
+                radius = diameter / 2
+                self.bounding_box = {
+                    "x_min": -radius, "x_max": radius,
+                    "y_min": -radius, "y_max": radius,
+                    "z_min": 0, "z_max": thickness
+                }
+                
+                self.construction_history.append(f"Base cylinder: ⌀{diameter}x{thickness}")
+                print(f"✅ Created mock base cylinder: ⌀{diameter}x{thickness} mm")
+                return True
+                
+            else:
+                print(f"❌ Unsupported base feature type: {feature_type}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Failed to create base feature: {e}")
+            return False
+    
+    def _apply_modifying_feature_from_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply modifying feature from new plan format."""
+        if not self.solid_data:
+            print("❌ No base solid to modify")
+            return False
+            
+        feature_type = feature_data.get("type")
+        
+        try:
+            if feature_type == "hole":
+                return self._apply_hole_new_format(feature_data)
+            elif feature_type == "slot":
+                return self._apply_slot_new_format(feature_data)
+            elif feature_type == "fillet":
+                return self._apply_fillet_new_format(feature_data)
+            elif feature_type == "chamfer":
+                return self._apply_chamfer_new_format(feature_data)
+            elif feature_type == "counterbore":
+                return self._apply_counterbore_new_format(feature_data)
+            elif feature_type == "countersink":
+                return self._apply_countersink_new_format(feature_data)
+            elif feature_type == "tapped_hole":
+                return self._apply_tapped_hole_new_format(feature_data)
+            else:
+                print(f"⚠️ Unsupported feature type: {feature_type}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Failed to apply {feature_type} feature: {e}")
+            return False
+    
+    def _apply_hole_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply a through hole feature with new format."""
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        diameter = feature_data.get("diameter", 6)
+        
+        # Calculate removed area
+        radius = diameter / 2
+        hole_area = math.pi * radius * radius
+        self.removed_area += hole_area
+        
+        self.construction_history.append(f"Through hole: ⌀{diameter} at ({x}, {y})")
+        print(f"  > Applied mock through hole: ⌀{diameter} at ({x}, {y})")
+        return True
+    
+    def _apply_slot_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply a slot feature with new format."""
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        width = feature_data.get("width", 6)
+        height = feature_data.get("height", 20)
+        
+        # Calculate removed area (rounded rectangle)
+        slot_area = width * height + math.pi * (width/2) * (width/2)
+        self.removed_area += slot_area
+        
+        self.construction_history.append(f"Slot: {height}x{width} at ({x}, {y})")
+        print(f"  > Applied mock slot: {height}x{width} at ({x}, {y})")
+        return True
+    
+    def _apply_fillet_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply fillet with new format."""
+        radius = feature_data.get("radius", 2)
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        
+        self.construction_history.append(f"Fillet: R{radius} at ({x}, {y})")
+        print(f"  > Applied mock fillet: R{radius} at ({x}, {y})")
+        return True
+    
+    def _apply_chamfer_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply chamfer with new format."""
+        distance = feature_data.get("distance", 1)
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        
+        self.construction_history.append(f"Chamfer: {distance}mm at ({x}, {y})")
+        print(f"  > Applied mock chamfer: {distance}mm at ({x}, {y})")
+        return True
+    
+    def _apply_counterbore_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply counterbore with new format."""
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        diameter = feature_data.get("diameter", 6)
+        counterbore_diameter = feature_data.get("counterbore_diameter", 12)
+        counterbore_depth = feature_data.get("counterbore_depth", 3)
+        
+        self.construction_history.append(f"Counterbore: ⌀{diameter}/⌀{counterbore_diameter}x{counterbore_depth} at ({x}, {y})")
+        print(f"  > Applied mock counterbore: ⌀{diameter}/⌀{counterbore_diameter}x{counterbore_depth} at ({x}, {y})")
+        return True
+    
+    def _apply_countersink_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply countersink with new format."""
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        hole_diameter = feature_data.get("hole_diameter", 6)
+        countersink_diameter = feature_data.get("countersink_diameter", 12)
+        countersink_angle = feature_data.get("countersink_angle", 90)
+        
+        self.construction_history.append(f"Countersink: ⌀{hole_diameter}/⌀{countersink_diameter}x{countersink_angle}° at ({x}, {y})")
+        print(f"  > Applied mock countersink: ⌀{hole_diameter}/⌀{countersink_diameter}x{countersink_angle}° at ({x}, {y})")
+        return True
+    
+    def _apply_tapped_hole_new_format(self, feature_data: Dict[str, Any]) -> bool:
+        """Apply tapped hole with new format."""
+        x = feature_data.get("x", 0)
+        y = feature_data.get("y", 0)
+        pilot_diameter = feature_data.get("pilot_diameter", 5)
+        thread_spec = feature_data.get("thread_spec", "M6")
+        
+        self.construction_history.append(f"Tapped hole: {thread_spec} (⌀{pilot_diameter}) at ({x}, {y})")
+        print(f"  > Applied mock tapped hole: {thread_spec} (⌀{pilot_diameter}) at ({x}, {y})")
+        return True
 
 # Alias for compatibility
 SolidBuilder = MockSolidBuilder

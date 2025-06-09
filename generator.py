@@ -34,6 +34,14 @@ except ImportError:
         print("❌ No SolidBuilder available")
         SOLID_BUILDER_AVAILABLE = False
 
+# Import multi-view layout engine (Milestone 2)
+try:
+    from multiview_layout import MultiViewLayout, PaperSize
+    MULTIVIEW_AVAILABLE = True
+except ImportError:
+    print("❌ MultiView layout not available")
+    MULTIVIEW_AVAILABLE = False
+
 def slugify(text):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,
@@ -613,6 +621,8 @@ def generate_from_plan(plan_path, output_path, visualize=False, validate=True):
         print(f"Visualizing DXF to {png_path}...")
         convert_dxf_to_png(output_path, png_path)
 
+    return True
+
 def draw_legacy_geometry(msp, geometry):
     """Draws geometry from a legacy plan format."""
     if geometry.get('lines'):
@@ -919,6 +929,269 @@ def generate_solid_view(plan_path, output_path, projection_type="isometric", vis
 
     return True
 
+def generate_multiview_sheet(plan_path, output_path, paper_size="A3", visualize=False, validate=True):
+    """
+    Generates a professional multi-view engineering drawing sheet.
+    This is the core function for Milestone 2: Multi-View Sheet functionality.
+    """
+    if not MULTIVIEW_AVAILABLE:
+        print("❌ Multi-view functionality requires multiview_layout module.")
+        return False
+    
+    if not SOLID_BUILDER_AVAILABLE:
+        print("❌ Multi-view functionality requires SolidBuilder.")
+        return False
+        
+    # Load and validate plan
+    with open(plan_path, 'r') as f:
+        plan = json.load(f)
+
+    if validate:
+        validator = DrawingPlanValidator()
+        is_valid, errors = validator.validate_plan(plan)
+        if not is_valid:
+            print("❌ Plan validation failed:")
+            for error in errors:
+                print(f"  - {error}")
+            return False
+        else:
+            print("✅ Plan validation successful")
+
+    # Ensure the output directory exists
+    output_dir = os.path.dirname(output_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    try:
+        # Create multi-view layout engine
+        paper_size_enum = PaperSize(paper_size.upper())
+        layout_engine = MultiViewLayout(paper_size_enum)
+        
+        # Generate four-view layout
+        print(f"🏗️ Generating multi-view sheet on {paper_size}...")
+        view_placements, sheet_metadata = layout_engine.generate_four_view_sheet(plan)
+        
+        if not view_placements:
+            print("❌ No views generated for multi-view sheet")
+            return False
+        
+        # Create DXF document
+        doc = ezdxf.new()
+        msp = doc.modelspace()
+        
+        # Set up layers including new ones for multi-view
+        setup_multiview_layers(doc)
+        
+        # Generate border and title block
+        border_data = layout_engine.generate_border_and_title_block()
+        
+        # Add border geometry
+        print("🖼️ Adding sheet border and title block...")
+        for border_item in border_data['border']:
+            if border_item['type'] == 'rectangle':
+                x, y = border_item['x'], border_item['y']
+                w, h = border_item['width'], border_item['height']
+                points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h), (x, y)]
+                msp.add_lwpolyline(points, dxfattribs={'layer': border_item['layer']})
+        
+        # Add title block geometry
+        for tb_item in border_data['title_block']:
+            layer = tb_item['layer']
+            if tb_item['type'] == 'rectangle':
+                x, y = tb_item['x'], tb_item['y']
+                w, h = tb_item['width'], tb_item['height']
+                points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h), (x, y)]
+                msp.add_lwpolyline(points, dxfattribs={'layer': layer})
+            elif tb_item['type'] == 'line':
+                start, end = tb_item['start'], tb_item['end']
+                msp.add_line(start=start, end=end, dxfattribs={'layer': layer})
+        
+        # Add title block text
+        tb_x, tb_y = border_data['title_block_position']
+        tb_w, tb_h = border_data['title_block_size']
+        
+        title_block_info = plan.get('title_block', {})
+        add_title_block_text(msp, title_block_info, tb_x, tb_y, tb_w, tb_h, sheet_metadata)
+        
+        # Add all views
+        print(f"📐 Adding {len(view_placements)} views to sheet...")
+        for view_placement in view_placements:
+            # Add view geometry
+            for edge in view_placement.edges:
+                start, end = edge
+                # Translate edge to view position
+                final_start = (start[0] + view_placement.x, start[1] + view_placement.y)
+                final_end = (end[0] + view_placement.x, end[1] + view_placement.y)
+                msp.add_line(start=final_start, end=final_end, dxfattribs={'layer': 'OUTLINE'})
+        
+        # Add view labels
+        view_labels = layout_engine.add_view_labels()
+        for label in view_labels:
+            msp.add_text(
+                label['text'],
+                dxfattribs={
+                    'height': label['height'],
+                    'insert': (label['x'], label['y']),
+                    'layer': label['layer'],
+                    'style': 'STANDARD'
+                }
+            )
+        
+        # Set paper space properties
+        setup_paper_space(doc, paper_size_enum)
+        
+        # Save the DXF file
+        doc.saveas(output_path)
+        print(f"✅ Successfully generated multi-view sheet: {output_path}")
+        
+        # Print layout summary
+        summary = layout_engine.get_layout_summary()
+        print(f"📊 Layout Summary:")
+        print(f"   Paper: {summary['paper_dimensions']}")
+        print(f"   Views: {summary['view_count']}")
+        for view in summary['views']:
+            print(f"   - {view['label']}: {view['position']} @ {view['scale']}x")
+
+        if visualize:
+            png_path = os.path.splitext(output_path)[0] + ".png"
+            print(f"🖼️ Visualizing multi-view sheet to {png_path}...")
+            convert_dxf_to_png(output_path, png_path)
+
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to generate multi-view sheet: {e}")
+        return False
+
+def setup_multiview_layers(doc):
+    """Set up additional layers for multi-view drawings."""
+    # Set up standard layers first
+    setup_drawing_layers(doc)
+    
+    # Add multi-view specific layers
+    additional_layers = [
+        ("BORDER", 1, "CONTINUOUS", 0.5),        # Red, continuous, thick border
+        ("TITLE_BLOCK", 7, "CONTINUOUS", 0.35),  # White, continuous, medium
+        ("VIEW_LABELS", 3, "CONTINUOUS", 0.25),  # Green, continuous, thin
+    ]
+    
+    for name, color, linetype, lineweight in additional_layers:
+        if name not in doc.layers:
+            layer = doc.layers.add(name)
+            layer.color = color
+            layer.linetype = linetype
+            layer.lineweight = int(lineweight * 100)
+    
+    print("✅ Set up multi-view drawing layers")
+
+def add_title_block_text(msp, title_block_info, tb_x, tb_y, tb_w, tb_h, sheet_metadata):
+    """Add text content to the title block."""
+    text_height = 2.5
+    
+    # Main title (top section)
+    title = title_block_info.get('drawing_title', 'MULTI-VIEW DRAWING')
+    msp.add_text(
+        title,
+        dxfattribs={
+            'height': 4.0,
+            'insert': (tb_x + tb_w * 0.3, tb_y + tb_h * 0.85),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Drawing number
+    dwg_number = title_block_info.get('drawing_number', 'MV-001')
+    msp.add_text(
+        f"DWG NO: {dwg_number}",
+        dxfattribs={
+            'height': text_height,
+            'insert': (tb_x + 5, tb_y + tb_h * 0.65),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Material and specifications
+    material = title_block_info.get('material', 'STEEL')
+    msp.add_text(
+        f"MATERIAL: {material}",
+        dxfattribs={
+            'height': text_height,
+            'insert': (tb_x + 5, tb_y + tb_h * 0.45),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Scale and views
+    msp.add_text(
+        f"VIEWS: {sheet_metadata['view_count']}",
+        dxfattribs={
+            'height': text_height,
+            'insert': (tb_x + 5, tb_y + tb_h * 0.25),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Right column info
+    scale = title_block_info.get('scale', '1:1')
+    msp.add_text(
+        f"SCALE: {scale}",
+        dxfattribs={
+            'height': text_height,
+            'insert': (tb_x + tb_w * 0.65, tb_y + tb_h * 0.65),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Volume info
+    volume = sheet_metadata.get('solid_volume', 0)
+    msp.add_text(
+        f"VOLUME: {volume:.1f} mm³",
+        dxfattribs={
+            'height': text_height,
+            'insert': (tb_x + tb_w * 0.65, tb_y + tb_h * 0.45),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Sheet info
+    paper_size = sheet_metadata.get('paper_size', 'A3')
+    msp.add_text(
+        f"SHEET: {paper_size}",
+        dxfattribs={
+            'height': text_height,
+            'insert': (tb_x + tb_w * 0.65, tb_y + tb_h * 0.25),
+            'layer': 'TEXT'
+        }
+    )
+    
+    # Date and revision
+    date = title_block_info.get('date', datetime.datetime.now().strftime("%Y-%m-%d"))
+    revision = title_block_info.get('revision', 'A')
+    
+    msp.add_text(
+        f"DATE: {date}",
+        dxfattribs={
+            'height': 2.0,
+            'insert': (tb_x + 5, tb_y + 5),
+            'layer': 'TEXT'
+        }
+    )
+    
+    msp.add_text(
+        f"REV: {revision}",
+        dxfattribs={
+            'height': 2.0,
+            'insert': (tb_x + tb_w * 0.65, tb_y + 5),
+            'layer': 'TEXT'
+        }
+    )
+
+def setup_paper_space(doc, paper_size: 'PaperSize'):
+    """Configure paper space settings for the document."""
+    # This would set up proper paper space in a full implementation
+    # For now, we'll add a comment to the DXF
+    pass
+
 def main():
     parser = argparse.ArgumentParser(description="Intelligent Drawing Generator")
     parser.add_argument('--plan', type=str, help='Path to the JSON drawing plan.')
@@ -935,6 +1208,12 @@ def main():
     parser.add_argument('--projection', type=str, default='isometric', 
                        choices=['isometric', 'front', 'top', 'right', 'back', 'bottom', 'left'],
                        help='Projection type for solid view (default: isometric).')
+    
+    # Milestone 2: Multi-View Sheet arguments
+    parser.add_argument('--multi-view', action='store_true', help='Generate professional 4-view engineering drawing sheet.')
+    parser.add_argument('--paper-size', type=str, default='A3',
+                       choices=['A4', 'A3', 'A2', 'A1'],
+                       help='Paper size for multi-view sheet (default: A3).')
 
     args = parser.parse_args()
 
@@ -981,7 +1260,14 @@ def main():
         return
 
     # --- ROUTE TO CORRECT GENERATOR ---
-    if args.solid_view:
+    if args.multi_view:
+        # Use Multi-View Sheet Generator (Milestone 2)
+        print(f"🏗️ Generating multi-view sheet on {args.paper_size}...")
+        success = generate_multiview_sheet(plan_path, output_path, args.paper_size, args.visualize, validate=True)
+        if not success:
+            print("❌ Failed to generate multi-view sheet")
+            return
+    elif args.solid_view:
         # Use 3D Solid View Generator (Milestone 1)
         print(f"🚀 Generating 3D solid view with {args.projection} projection...")
         success = generate_solid_view(plan_path, output_path, args.projection, args.visualize, validate=True)
